@@ -31,6 +31,11 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg: ^2.0.5
+  timer_count_down: ^2.2.0
+  email_validator: "^2.1.16"
+  google_nav_bar: ^5.0.6
+  
+  
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -40,6 +45,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
