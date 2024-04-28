@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:email_validator/email_validator.dart';
 import 'dart:async';
+import 'package:dio/dio.dart';
+
+import 'package:get_storage/get_storage.dart';
+import 'package:logger/logger.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -20,6 +24,8 @@ class _SignUpState extends State<SignIn> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final myStorage = GetStorage();
+
   String _warningText = '';
 
   // void onSignInTap() {}
@@ -57,11 +63,64 @@ class _SignUpState extends State<SignIn> {
         _warningText = "Password can't be empty!";
       });
     } else {
-      Navigator.push(
+      goLogin();
+    }
+  }
+  void getUser() async {
+    final dio = Dio();
+    var logger = Logger();
+    try {
+      final response =
+          await dio.get('https://mobileapis.manpits.xyz/api/user',
+              options: Options(
+                headers: {'Authorization': 'Bearer ${myStorage.read('token')}'},
+              ));
+      logger.i(response);
+      if (response.statusCode == 200) {
+        setState(() {
+          myStorage.write('email', response.data['data']['user']['email']);
+          myStorage.write('name', response.data['data']['user']['name']);
+          myStorage.write('id', response.data['data']['user']['id'].toString());
+        });
+      }
+    } on DioException catch (e) {
+      logger.e(e);
+    }
+  }
+
+  void goLogin() async {
+    var logger = Logger(printer: PrettyPrinter());
+    final dio = Dio();
+    try {
+      final response = await dio.post(
+        'https://mobileapis.manpits.xyz/api/login',
+        data: {
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        },
+      );
+      if (response.statusCode == 200) {
+        myStorage.write('token', response.data['data']['token']);
+        logger.i(response);
+        getUser();
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => const HomePage(),
           ));
+      }
+    } on DioException catch (e) {
+      setState(() {
+        _invalidInput = true;
+
+        Timer(const Duration(seconds: 3), () {
+          setState(() {
+            _invalidInput = false;
+          });
+        });
+        _warningText = e.response?.data['message'] ?? 'Something went wrong';
+      });
+      logger.e(e);
     }
   }
 
@@ -119,7 +178,8 @@ class _SignUpState extends State<SignIn> {
                               borderSide: BorderSide(
                                 color: Color.fromRGBO(215, 252, 112, 1),
                               ),
-                              borderRadius: BorderRadius.all(Radius.circular(16)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16)),
                             ),
                           ),
                           style: const TextStyle(color: Colors.white),
@@ -148,7 +208,8 @@ class _SignUpState extends State<SignIn> {
                               borderSide: BorderSide(
                                 color: Color.fromRGBO(215, 252, 112, 1),
                               ),
-                              borderRadius: BorderRadius.all(Radius.circular(16)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16)),
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(

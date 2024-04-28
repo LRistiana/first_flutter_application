@@ -64,11 +64,12 @@ class IntroPage extends StatelessWidget {
                     // button
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SignUp(),
-                            ));
+                        Navigator.pushReplacementNamed(context, '/signUp');
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) => const SignUp(),
+                        //     ));
                       },
                       child: Container(
                           decoration: const BoxDecoration(
