@@ -37,31 +37,37 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         Navigator.pushNamed(context, '/signIn');
         myStorage.remove('token');
+      } else if (response.statusCode == 406) {
+        Navigator.pushNamed(context, '/signIn');
+        myStorage.remove('token');
       }
     } on DioException catch (e) {
       logger.e(e);
+      Navigator.pushNamed(context, '/signIn');
+      myStorage.remove('token');
     }
   }
-  // onTabChange 
-  void navigateBottomBar(int index){
+
+  // onTabChange
+  void navigateBottomBar(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
   final List<Widget> _pages = [
-    const DasboardPage(),
+    // const DasboardPage(),
     const TeamPage(),
     const ProfilePage(),
   ];
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: const Color.fromRGBO(17, 17, 17, 1),
-        bottomNavigationBar:  BottomNavBar(onTabchange: (index) => navigateBottomBar(index),),
+        bottomNavigationBar: BottomNavBar(
+          onTabchange: (index) => navigateBottomBar(index),
+        ),
         appBar: AppBar(
           backgroundColor: const Color.fromRGBO(0, 0, 0, 1),
           leading: Builder(

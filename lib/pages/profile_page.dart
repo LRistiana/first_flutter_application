@@ -1,5 +1,6 @@
 // import "package:dio/dio.dart";
 // import "package:first_flutter_application/utils/bottom_nav_bar.dart";
+import "package:first_flutter_application/controller/user_controller.dart";
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import "package:dio/dio.dart";
@@ -15,30 +16,60 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final myStorage = GetStorage();
+  static const String _apiUrl = "https://mobileapis.manpits.xyz/api";
+  dynamic userData;
+
   var email = 'xxxxx';
   var name = 'xxxxx';
   var id = 'xxxxx';
 
-  Future getUser() async {
-    final dio = Dio();
+  // Future getUser() async {
+  //   final dio = Dio();
+  //   var logger = Logger();
+  //   try {
+  //     final response = await dio.get('https://mobileapis.manpits.xyz/api/user',
+  //         options: Options(
+  //           headers: {'Authorization': 'Bearer ${myStorage.read('token')}'},
+  //         ));
+  //     logger.i(response);
+  //     if (response.statusCode == 200) {
+  //       setState(() {
+  //         email = response.data['data']['email'];
+  //         name = response.data['data']['name'];
+  //         id = response.data['data']['id'];
+  //       });
+  //     }
+  //   } on DioException catch (e) {
+  //     logger.e(e);
+  //   }
+  // }
+
+  void getUserData() async {
     var logger = Logger();
     try {
-      final response = await dio.get('https://mobileapis.manpits.xyz/api/user',
-          options: Options(
-            headers: {'Authorization': 'Bearer ${myStorage.read('token')}'},
-          ));
-      logger.i(response);
+      var response = await Dio().get("$_apiUrl/user",
+          options: Options(headers: {
+            'Authorization': "Bearer ${myStorage.read("token")}"
+          }));
+
       if (response.statusCode == 200) {
         setState(() {
-          email = response.data['data']['email'];
-          name = response.data['data']['name'];
-          id = response.data['data']['id'];
+          userData = response.data["data"]["user"];
         });
+      } else {
+        throw DioException.connectionTimeout;
       }
     } on DioException catch (e) {
       logger.e(e);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+   getUserData();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Container(
                   padding: const EdgeInsets.all(8.0),
-                  child:  Text(myStorage.read('name'),
+                  child:  Text((userData != null ? userData["name"] : "Loading..."),
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                           fontSize: 18,
@@ -84,30 +115,30 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(1.0),
-                  child: Text('ID ',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Color.fromRGBO(214, 251, 112, 1),
-                          fontWeight: FontWeight.normal,
-                          fontFamily: 'Montserrat')),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child:  Text(myStorage.read('id'),
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                          fontSize: 18,
-                          color: Color.fromRGBO(214, 251, 112, 1),
-                          fontWeight: FontWeight.normal,
-                          fontFamily: 'Montserrat')),
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     const Padding(
+            //       padding: EdgeInsets.all(1.0),
+            //       child: Text('ID ',
+            //           textAlign: TextAlign.left,
+            //           style: TextStyle(
+            //               fontSize: 18,
+            //               color: Color.fromRGBO(214, 251, 112, 1),
+            //               fontWeight: FontWeight.normal,
+            //               fontFamily: 'Montserrat')),
+            //     ),
+            //     Container(
+            //       padding: const EdgeInsets.all(8.0),
+            //       child:  Text(myStorage.read('id'),
+            //           textAlign: TextAlign.left,
+            //           style: const TextStyle(
+            //               fontSize: 18,
+            //               color: Color.fromRGBO(214, 251, 112, 1),
+            //               fontWeight: FontWeight.normal,
+            //               fontFamily: 'Montserrat')),
+            //     ),
+            //   ],
+            // ),
             Row(
               children: [
                 const Padding(
@@ -122,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Container(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(myStorage.read('email'),
+                  child: Text((userData != null ? userData["email"] : "Loading..."),
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                           fontSize: 18,

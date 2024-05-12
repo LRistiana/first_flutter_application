@@ -66,27 +66,7 @@ class _SignUpState extends State<SignIn> {
       goLogin();
     }
   }
-  void getUser() async {
-    final dio = Dio();
-    var logger = Logger();
-    try {
-      final response =
-          await dio.get('https://mobileapis.manpits.xyz/api/user',
-              options: Options(
-                headers: {'Authorization': 'Bearer ${myStorage.read('token')}'},
-              ));
-      logger.i(response);
-      if (response.statusCode == 200) {
-        setState(() {
-          myStorage.write('email', response.data['data']['user']['email']);
-          myStorage.write('name', response.data['data']['user']['name']);
-          myStorage.write('id', response.data['data']['user']['id'].toString());
-        });
-      }
-    } on DioException catch (e) {
-      logger.e(e);
-    }
-  }
+
 
   void goLogin() async {
     var logger = Logger(printer: PrettyPrinter());
@@ -102,12 +82,7 @@ class _SignUpState extends State<SignIn> {
       if (response.statusCode == 200) {
         myStorage.write('token', response.data['data']['token']);
         logger.i(response);
-        getUser();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HomePage(),
-          ));
+        Navigator.pushReplacementNamed(context, '/homePage');
       }
     } on DioException catch (e) {
       setState(() {

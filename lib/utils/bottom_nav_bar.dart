@@ -19,7 +19,6 @@ class BottomNavBar extends StatelessWidget {
 
 
         tabs:  const [
-          GButton(icon: Icons.dashboard, text: 'Dasboard'),
           GButton(icon: Icons.people, text: 'Anggota'),
           GButton(icon: Icons.person_2, text: 'Profile')
         ],
