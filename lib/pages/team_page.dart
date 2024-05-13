@@ -281,7 +281,6 @@ class _EditMemberButtonState extends State<EditMemberButton> {
     idController.text = widget.members.nomorInduk.toString();
     nameController.text = widget.members.nama;
     addressController.text = widget.members.alamat;
-    addressController.text = widget.members.telepon;
     telephoneController.text = widget.members.telepon;
     selectedDate = DateTime.parse(widget.members.tanggalLahir);
 
