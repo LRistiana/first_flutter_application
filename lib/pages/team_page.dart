@@ -1,12 +1,8 @@
-// import "package:dio/dio.dart";
-// import "package:first_flutter_application/utils/bottom_nav_bar.dart";
-import "dart:async";
-
-import "package:flutter/material.dart";
-import "package:flutter/widgets.dart";
-import "package:dio/dio.dart";
-import "package:get_storage/get_storage.dart";
-// import "package:logger/logger.dart";
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:first_flutter_application/model/team_members_model.dart'; // Import the provider from the models folder
+import 'package:first_flutter_application/model/tabungan_model.dart'; // Import the provider from the models folder
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -16,63 +12,88 @@ class TeamPage extends StatefulWidget {
 }
 
 class _TeamPageState extends State<TeamPage> {
-  List<TeamMember> teamMembers = [];
-  final myStorage = GetStorage();
-  static const String _apiUrl = "https://mobileapis.manpits.xyz/api/anggota";
-
   @override
   void initState() {
     super.initState();
-    fetchTeamMembers();
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    teamProvider.fetchTeamMembers();
   }
 
-  Future<void> fetchTeamMembers() async {
-    try {
-      Response response = await Dio().get('$_apiUrl',
-          options: Options(
-              headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
-      if (response.statusCode == 200) {
-        final List<dynamic> anggotas = response.data['data']['anggotas'];
-
-        setState(() {
-          teamMembers =
-              anggotas.map((member) => TeamMember.fromJson(member)).toList();
-        });
-      } else {
-        throw Exception('Gagal mengambil data dari API');
-      }
-    } catch (error) {
-      print('Error: $error');
-      // Tambahkan penanganan error sesuai kebutuhan Anda
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<TeamProvider>(
+      builder: (context, teamProvider, child) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Stack(
+            children: [
+              teamProvider.teamMembers.isEmpty
+                  ? const Center(
+                      child: Text("Belum ada anggota tim",
+                          style:
+                              TextStyle(fontSize: 20, color: Colors.white38)),
+                    )
+                  : ListView.builder(
+                      itemCount: teamProvider.teamMembers.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: ListTile(
+                              leading:
+                                  const Icon(Icons.person, color: Colors.black),
+                              title: Text(
+                                teamProvider.teamMembers[index].nama,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              subtitle: FutureBuilder<int>(
+                                future: teamProvider.getSaldo(
+                                    teamProvider.teamMembers[index].id),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Text('Loading...');
+                                  } else if (snapshot.hasError) {
+                                    return const Text('Error');
+                                  } else {
+                                    return Text('Saldo: Rp.${snapshot.data}');
+                                  }
+                                },
+                              ),
+                              onTap: () => _showMemberDetail(
+                                  teamProvider.teamMembers[index], context),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(context, '/tabungan',
+                                          arguments: teamProvider
+                                              .teamMembers[index].id);
+                                    },
+                                    icon: const Icon(Icons.history,
+                                        color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+              AddMemberButton(),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  void _deleteMember(int memberId) async {
-    try {
-      Response response = await Dio().delete('$_apiUrl/$memberId',
-          options: Options(
-              headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
-      setState(() {
-        teamMembers.removeWhere((member) => member.id == memberId);
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Anggota tim berhasil dihapus'),
-        ),
-      );
-    } catch (error) {
-      print('Error saat menghapus anggota: $error');
-      // Tampilkan pesan kesalahan atau lakukan penanganan kesalahan lainnya
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gagal menghapus anggota tim'),
-        ),
-      );
-    }
-  }
-
-  void _showMemberDetail(TeamMember member) {
+  void _showMemberDetail(TeamMember member, BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -97,11 +118,16 @@ class _TeamPageState extends State<TeamPage> {
                 _buildDetailRow('Alamat', member.alamat),
                 _buildDetailRow('Tanggal Lahir', member.tanggalLahir),
                 _buildDetailRow('Telepon', member.telepon),
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    EditMemberButton(members: member),
+                    AddSavingButton(
+                      member: member,
+                    ),
+                    const SizedBox(width: 20),
+                    EditMemberButton(member: member),
+                    DeleteMemberButton(member: member)
                   ],
                 ),
               ],
@@ -119,7 +145,7 @@ class _TeamPageState extends State<TeamPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            label + ':',
+            label,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(value),
@@ -127,56 +153,495 @@ class _TeamPageState extends State<TeamPage> {
       ),
     );
   }
+}
+
+class AddMemberButton extends StatefulWidget {
+  const AddMemberButton({super.key});
+  @override
+  State<AddMemberButton> createState() => _AddMemberButtonState();
+}
+
+class _AddMemberButtonState extends State<AddMemberButton> {
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController telephoneController = TextEditingController();
+  DateTime? selectedDate;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Stack(
-        children: [
-          teamMembers.isEmpty
-              ? const Center(
-                  child: Text("Belum ada anggota tim",
-                      style: TextStyle(fontSize: 20, color: Colors.white38)),
-                )
-              : ListView.builder(
-                  itemCount: teamMembers.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: ListTile(
-                          leading:
-                              const Icon(Icons.person, color: Colors.black),
-                          title: Text(
-                            teamMembers[index].nama,
-                            style: const TextStyle(color: Colors.white),
+    return Container(
+      alignment: Alignment.bottomRight,
+      padding: const EdgeInsets.only(
+          bottom: 20,
+          right:
+              20), // Ubah padding agar tombol tidak terlalu dekat dengan tepi layar
+      child: FloatingActionButton(
+        backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
+        child: const Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
+        onPressed: () {
+          _showAddMemberDialog(
+              context); // Panggil fungsi untuk menampilkan dialog tambah anggota
+        },
+      ),
+    );
+  }
+
+  void _showAddMemberDialog(BuildContext context) {
+    // Implementasi dialog tambah anggota tim di sini
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Tambah Anggota Tim'),
+          contentPadding: EdgeInsets.zero,
+          content: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextInput(hint: "ID Number", textController: idController),
+                  TextInput(hint: "Name", textController: nameController),
+                  TextInput(hint: "Address", textController: addressController),
+                  TextInput(
+                      hint: "Telephone", textController: telephoneController),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Date of Birth"),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final DateTime? dateTime = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime(2050),
+                            );
+                            if (dateTime != null) {
+                              setState(() {
+                                // Lakukan sesuatu dengan tanggal yang dipilih, misalnya menyimpannya ke dalam variabel atau menampilkan di layar
+                                print('Selected date: $dateTime');
+                                selectedDate = dateTime;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              side: BorderSide(color: Colors.black),
+                            ),
                           ),
-                          onTap: () => _showMemberDetail(teamMembers[index]),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  _deleteMember(teamMembers[index].id);
-                                  // Implementasi fungsi hapus di sini
-                                },
-                                icon: const Icon(Icons.delete,
-                                    color: Colors.white),
-                              ),
-                            ],
+                          child: Text(selectedDate != null
+                              ? selectedDate.toString()
+                              : "Pick a Date"),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text('Batal',style: TextStyle(color: Colors.black),),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final newMember = TeamMember(
+                    id: int.parse(idController.text),
+                    nomorInduk: int.parse(idController.text),
+                    nama: nameController.text,
+                    alamat: addressController.text,
+                    telepon: telephoneController.text,
+                    tanggalLahir: selectedDate.toString(),
+                    imageUrl: '',
+                    statusAktif: 1);
+                // Simpan ke penyimpanan atau API
+                // Simpan ke penyimpanan atau API, misalnya:
+                teamProvider.addMember(newMember);
+                Navigator.of(context).pop(); // Tutup dialog setelah selesai
+              },
+               style: ElevatedButton.styleFrom(
+                backgroundColor:  const Color.fromRGBO(215, 252, 112, 1),
+              ),
+              child: const Text('Simpan',style: TextStyle(color: Colors.black),),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class EditMemberButton extends StatefulWidget {
+  const EditMemberButton({super.key, required this.member});
+  final TeamMember member;
+  @override
+  State<EditMemberButton> createState() => _EditMemberButtonState();
+}
+
+class _EditMemberButtonState extends State<EditMemberButton> {
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController telephoneController = TextEditingController();
+  DateTime? selectedDate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.bottomRight,
+      padding: const EdgeInsets.only(
+          bottom: 20,
+          right:
+              20), // Ubah padding agar tombol tidak terlalu dekat dengan tepi layar
+      child: FloatingActionButton(
+        backgroundColor: Colors.white,
+        child: const Icon(
+          Icons.edit, // Ubah ikon menjadi ikon edit
+          color: Colors.orange,
+        ),
+        onPressed: () {
+          _showEditMemberDialog(
+              context); // Panggil fungsi untuk menampilkan dialog edit anggota
+        },
+      ),
+    );
+  }
+
+  void _showEditMemberDialog(BuildContext context) {
+    idController.text = widget.member.nomorInduk.toString();
+    nameController.text = widget.member.nama;
+    addressController.text = widget.member.alamat;
+    telephoneController.text = widget.member.telepon;
+    selectedDate = DateTime.parse(widget.member.tanggalLahir);
+    // Implementasi dialog edit anggota tim di sini
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Anggota Tim'), // Ubah judul dialog
+          contentPadding: EdgeInsets.zero,
+          content: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextInput(hint: "ID Number", textController: idController),
+                  TextInput(hint: "Name", textController: nameController),
+                  TextInput(hint: "Address", textController: addressController),
+                  TextInput(
+                      hint: "Telephone", textController: telephoneController),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Date of Birth"),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final DateTime? dateTime = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime(2050),
+                            );
+                            if (dateTime != null) {
+                              setState(() {
+                                // Lakukan sesuatu dengan tanggal yang dipilih, misalnya menyimpannya ke dalam variabel atau menampilkan di layar
+                                print('Selected date: $dateTime');
+                                selectedDate = dateTime;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              side: BorderSide(color: Colors.black),
+                            ),
                           ),
+                          child: Text(selectedDate != null
+                              ? selectedDate.toString()
+                              : "Pick a Date"),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text('Batal',
+                  style: TextStyle(color: Colors.black)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
+              ),
+              onPressed: () {
+                final newMember = TeamMember(
+                    id: widget.member.id,
+                    nomorInduk: int.parse(idController.text),
+                    nama: nameController.text,
+                    alamat: addressController.text,
+                    telepon: telephoneController.text,
+                    tanggalLahir: selectedDate.toString(),
+                    imageUrl: '',
+                    statusAktif: 1);
+                // Simpan perubahan ke penyimpanan atau API
+                // Simpan perubahan ke penyimpanan atau API, misalnya:
+                teamProvider.updateMember(newMember);
+                Navigator.of(context).pop(); // Tutup dialog setelah selesai
+              },
+              child: const Text('Simpan Perubahan',
+                  style: TextStyle(color: Colors.black)), // Ubah teks tombol
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class DeleteMemberButton extends StatelessWidget {
+  const DeleteMemberButton({super.key, required this.member});
+  final TeamMember member;
+
+  void _showDeleteMemberDialog(BuildContext context, TeamMember member) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Hapus Anggota Tim'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Apakah Anda yakin ingin menghapus anggota tim ini?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text('Batal',style: TextStyle(color: Colors.black),),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final teamProvider =
+                    Provider.of<TeamProvider>(context, listen: false);
+                // Panggil fungsi untuk menghapus anggota tim dari penyimpanan atau API
+                teamProvider.deleteMember(member.id);
+                Navigator.of(context).pop(); // Tutup dialog setelah selesai
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const Text('Hapus',style: TextStyle(color: Colors.white),),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.bottomRight,
+      padding: const EdgeInsets.only(
+          bottom: 20,
+          right:
+              20), // Ubah padding agar tombol tidak terlalu dekat dengan tepi layar
+      child: FloatingActionButton(
+        backgroundColor: Colors.red,
+        child: const Icon(
+          Icons.delete, // Ubah ikon menjadi ikon edit
+          color: Colors.white,
+        ),
+        onPressed: () {
+          _showDeleteMemberDialog(context,
+              member); // Panggil fungsi untuk menampilkan dialog edit anggota
+        },
+      ),
+    );
+  }
+}
+
+class AddSavingButton extends StatefulWidget {
+  AddSavingButton({super.key, required this.member});
+  final TeamMember member;
+
+  @override
+  State<AddSavingButton> createState() => _AddSavingButtonState();
+}
+
+class _AddSavingButtonState extends State<AddSavingButton> {
+  JenisTransaksi? selectedTypeTransaction;
+
+  final TextEditingController nominalController = TextEditingController();
+
+  void _showAddSavingDialog(BuildContext context) {
+    final tabungan = Provider.of<TabunganProvider>(context, listen: false);
+    final jenisTransaksiProvider =
+        Provider.of<JenisTransaksiProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Tambah Tabungan'),
+          contentPadding: EdgeInsets.zero,
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Consumer<JenisTransaksiProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.isLoading) {
+                      return const CircularProgressIndicator();
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownButtonFormField<JenisTransaksi>(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: "Pilih Jenis Transaksi",
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Color.fromARGB(255, 154, 210, 2),
+                                  width: 2),
+                            ),
+                          ),
+                          value: selectedTypeTransaction,
+                          onChanged: (JenisTransaksi? newValue) {
+                            setState(() {
+                              selectedTypeTransaction = newValue;
+                            });
+                          },
+                          items: provider.jenisTransaksiList
+                              .map<DropdownMenuItem<JenisTransaksi>>(
+                                  (JenisTransaksi value) {
+                            return DropdownMenuItem<JenisTransaksi>(
+                              value: value,
+                              child: Text(value.trxName),
+                            );
+                          }).toList(),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   },
                 ),
-          AddMemberButton(),
-        ],
+                TextInput(hint: "Nominal", textController: nominalController)
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text(
+                'Batal',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (selectedTypeTransaction != null) {
+                  final newSaving = Tabungan(
+                    transaksiID: selectedTypeTransaction!.id,
+                    nominal: int.parse(nominalController.text),
+                  );
+
+                  tabungan.addTabungan(widget.member, newSaving);
+                  Navigator.of(context).pop(); // Tutup dialog setelah selesai
+                } else {
+                  // Handle case where no transaction type is selected
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Please select a transaction type')),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
+              ),
+              child:
+                  const Text('Simpan', style: TextStyle(color: Colors.black)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final jenisTransaksiProvider =
+        Provider.of<JenisTransaksiProvider>(context, listen: false);
+    jenisTransaksiProvider.fetchTransactions();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.bottomRight,
+      padding: const EdgeInsets.only(
+        bottom: 20,
+        right: 20,
+      ), // Ubah padding agar tombol tidak terlalu dekat dengan tepi layar
+      child: SizedBox(
+        width: 150, // Atur lebar tombol
+        height: 50, // Atur tinggi tombol
+        child: FloatingActionButton(
+          backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
+          onPressed: () {
+            _showAddSavingDialog(context);
+          },
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+              Text(
+                "Add Savings",
+                style: TextStyle(color: Colors.black),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -194,421 +659,115 @@ class TextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: textController,
-      decoration: InputDecoration(
-        border: const OutlineInputBorder(),
-        hintText: hint,
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide:
-              BorderSide(color: Color.fromARGB(255, 154, 210, 2), width: 2),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: textController,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          hintText: hint,
+          enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Color.fromARGB(255, 154, 210, 2), width: 2),
+          ),
         ),
       ),
     );
   }
 }
 
-class EditMemberButton extends StatefulWidget {
-  EditMemberButton({
-    super.key,
-    required this.members,
-  });
+// class AddSavingsButton extends StatefulWidget {
+//   final TeamMember member;
 
-  final TeamMember members;
+//   const AddSavingsButton({super.key, required this.member});
+//   @override
+//   State<AddSavingsButton> createState() => _AddSavingsButtonState();
+// }
 
-  @override
-  State<EditMemberButton> createState() => _EditMemberButtonState();
-}
+// class _AddSavingsButtonState extends State<AddSavingsButton> {
+//   final TextEditingController nominalController = TextEditingController();
 
-class _EditMemberButtonState extends State<EditMemberButton> {
-  final TextEditingController idController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
-  final TextEditingController telephoneController = TextEditingController();
-  final String _apiUrl = "https://mobileapis.manpits.xyz/api/anggota";
-  DateTime? selectedDate;
+//   void _showAddSavingsDialog(BuildContext context) {
+//     final tabungan = Provider.of<TabunganProvider>(context, listen: false);
+//     // Implementasi dialog tambah anggota tim di sini
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           title: const Text('Tambah Anggota Tim'),
+//           contentPadding: EdgeInsets.zero,
+//           content: SingleChildScrollView(
+//             child: Padding(
+//               padding: const EdgeInsets.all(8.0),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: [
+//                   TextInput(hint: "Nominal", textController: nominalController),
+//                 ],
+//               ),
+//             ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop(); // Tutup dialog
+//               },
+//               child: const Text('Batal'),
+//             ),
+//             ElevatedButton(
+//               onPressed: () {
+//                 final newSaving = Tabungan(
+//                   transaksiID: 4,
+//                   nominal: int.parse(nominalController.text),
+//                 );
+//                 // Simpan ke penyimpanan atau API
+//                 // Simpan ke penyimpanan atau API, misalnya:
+//                 tabungan.addTabungan(widget.member, newSaving);
+//                 Navigator.of(context).pop(); // Tutup dialog setelah selesai
+//               },
+//               child: const Text('Simpan'),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
 
-  final myStorage = GetStorage();
-
-  void editMember(context) async {
-    try {
-      final response = await Dio().put("$_apiUrl/${widget.members.id}",
-          data: {
-            "nomor_induk": idController.text,
-            "nama": nameController.text,
-            "alamat": addressController.text,
-            "telepon": telephoneController.text,
-            "tgl_lahir": selectedDate.toString(),
-            "status_aktif": "1",
-          },
-          options: Options(
-            headers: {
-              "Authorization": "Bearer ${myStorage.read("token")}",
-            },
-          ));
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Anggota tim berhasil diupdate'),
-          ),
-        );
-        Navigator.pop(context);
-        Navigator.pushReplacementNamed(context, '/homePage');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal update anggota tim'),
-          ),
-        );
-        Navigator.pop(context);
-      }
-    } on DioException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gagal update anggota tim'),
-        ),
-      );
-      Navigator.pop(context);
-      print('Error: $e');
-    }
-  }
-
-  void editMemberDialog(BuildContext context) {
-    idController.text = widget.members.nomorInduk.toString();
-    nameController.text = widget.members.nama;
-    addressController.text = widget.members.alamat;
-    telephoneController.text = widget.members.telepon;
-    selectedDate = DateTime.parse(widget.members.tanggalLahir);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          insetPadding: EdgeInsets.zero,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            height: 550,
-            width: 350,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: 20,
-                bottom: 20,
-                right: 20,
-                left: 20,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Text(
-                    "Edit Team Member",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color:
-                          Color.fromARGB(255, 154, 210, 2), // Warna yang diubah
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextInput(hint: "ID Number", textController: idController),
-                  TextInput(hint: "Name", textController: nameController),
-                  TextInput(hint: "Address", textController: addressController),
-                  TextInput(
-                      hint: "Telephone", textController: telephoneController),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Date of Birth"),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final DateTime? dateTime = await showDatePicker(
-                            context: context,
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime(2050),
-                          );
-                          if (dateTime != null) {
-                            setState(() {
-                              selectedDate = dateTime;
-                            });
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            side: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                        child: const Text("Pick a Date"),
-                      )
-                    ],
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      editMember(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color.fromARGB(255, 154, 210, 2), // Warna yang diubah
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size.fromHeight(50),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                    child: const Text(
-                      "Save Changes",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.bottomRight,
-      padding: const EdgeInsets.only(bottom: 20),
-      child: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 239, 152, 3),
-        child: const Icon(
-          Icons.edit,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          editMemberDialog(context);
-        },
-      ),
-    );
-  }
-}
-
-class AddMemberButton extends StatefulWidget {
-  AddMemberButton({super.key});
-
-  @override
-  State<AddMemberButton> createState() => _AddMemberButtonState();
-}
-
-class _AddMemberButtonState extends State<AddMemberButton> {
-  final String _apiUrl = "https://mobileapis.manpits.xyz/api/anggota";
-
-  final myStorage = GetStorage();
-
-  final TextEditingController idController = TextEditingController();
-
-  final TextEditingController nameController = TextEditingController();
-
-  final TextEditingController addressController = TextEditingController();
-
-  final TextEditingController telephoneController = TextEditingController();
-  DateTime? selectedDate;
-
-  void postMember(context) async {
-    try {
-      final response = await Dio().post(_apiUrl,
-          data: {
-            "nomor_induk": idController.text,
-            "nama": nameController.text,
-            "alamat": addressController.text,
-            "telepon": telephoneController.text,
-            "tgl_lahir": selectedDate.toString(),
-          },
-          options: Options(
-            headers: {
-              "Authorization": "Bearer ${myStorage.read("token")}",
-            },
-          ));
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Anggota tim berhasil ditambahkan'),
-          ),
-        );
-        Navigator.pop(context);
-        Navigator.pushReplacementNamed(context, '/homePage');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal menambahkan anggota tim'),
-          ),
-        );
-        Navigator.pop(context);
-      }
-    } on DioException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gagal menambahkan anggota tim'),
-        ),
-      );
-      Navigator.pop(context);
-      print('Error: $e');
-    }
-  }
-
-  void addMemberDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          insetPadding: EdgeInsets.zero,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            height: 550,
-            width: 350,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: 20,
-                bottom: 20,
-                right: 20,
-                left: 20,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Text(
-                    "New Team Member",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color.fromARGB(255, 154, 210, 2),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextInput(hint: "ID Number", textController: idController),
-                  TextInput(hint: "Name", textController: nameController),
-                  TextInput(hint: "Address", textController: addressController),
-                  TextInput(
-                      hint: "Telephone", textController: telephoneController),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Date of Birth"),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final DateTime? dateTime = await showDatePicker(
-                            context: context,
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime(2050),
-                          );
-                          if (dateTime != null) {
-                            setState(() {
-                              // Lakukan sesuatu dengan tanggal yang dipilih, misalnya menyimpannya ke dalam variabel atau menampilkan di layar
-                              print('Selected date: $dateTime');
-                              selectedDate = dateTime;
-                            });
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            side: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                        child: Text(selectedDate != null
-                            ? selectedDate.toString()
-                            : "Pick a Date"),
-                      )
-                    ],
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      postMember(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 154, 210, 2),
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size.fromHeight(50),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                    child: const Text(
-                      "Save Member",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.bottomRight,
-      padding: const EdgeInsets.only(bottom: 20),
-      child: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
-        child: const Icon(
-          Icons.add,
-          color: Colors.black,
-        ),
-        onPressed: () {
-          addMemberDialog(context);
-        },
-      ),
-    );
-  }
-}
-
-class TeamMember {
-  final int id;
-  final int nomorInduk;
-  final String nama;
-  final String alamat;
-  final String tanggalLahir;
-  final String telepon;
-  final String imageUrl;
-  final int statusAktif;
-
-  TeamMember({
-    required this.id,
-    required this.nomorInduk,
-    required this.nama,
-    required this.alamat,
-    required this.tanggalLahir,
-    required this.telepon,
-    required this.imageUrl,
-    required this.statusAktif,
-  });
-
-  factory TeamMember.fromJson(Map<String, dynamic> json) {
-    return TeamMember(
-      id: json['id'],
-      nomorInduk: json['nomor_induk'],
-      nama: json['nama'],
-      alamat: json['alamat'],
-      tanggalLahir: json['tgl_lahir'],
-      telepon: json['telepon'],
-      imageUrl:
-          json['image_url'] ?? '', // Jika image_url null, gunakan string kosong
-      statusAktif: json['status_aktif'],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       alignment: Alignment.bottomRight,
+//       padding: const EdgeInsets.only(
+//         bottom: 20,
+//         right: 20,
+//       ), // Ubah padding agar tombol tidak terlalu dekat dengan tepi layar
+//       child: SizedBox(
+//         width: 150, // Atur lebar tombol
+//         height: 50, // Atur tinggi tombol
+//         child: FloatingActionButton(
+//           backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
+//           onPressed: () {
+//             _showAddSavingsDialog(context);
+//           },
+//           child: const Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//             children: [
+//               Icon(
+//                 Icons.add,
+//                 color: Colors.black,
+//               ),
+//               Text(
+//                 "Add Savings",
+//                 style: TextStyle(color: Colors.black),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
