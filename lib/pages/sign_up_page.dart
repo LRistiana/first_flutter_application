@@ -52,8 +52,10 @@ class _SignUpState extends State<SignUp> {
           'password': _passwordController.text,
         },
       );
+      // Navigator.pushReplacementNamed(context, '/signIn');
       logger.i(response);
       if (response.statusCode == 200) {
+        // Navigator.pushReplacementNamed(context, '/signIn');
         try {
           final response = await dio.post(
             'https://mobileapis.manpits.xyz/api/login',

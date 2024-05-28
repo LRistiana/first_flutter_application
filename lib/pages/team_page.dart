@@ -1,8 +1,10 @@
+import 'package:first_flutter_application/utils/modal_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:first_flutter_application/model/team_members_model.dart'; // Import the provider from the models folder
 import 'package:first_flutter_application/model/tabungan_model.dart'; // Import the provider from the models folder
+import 'package:first_flutter_application/widgets/modals/customize_modal.dart'; // Import the provider from the models folder
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -64,7 +66,8 @@ class _TeamPageState extends State<TeamPage> {
                                   }
                                 },
                               ),
-                              onTap: () => _showMemberDetail(
+                              onTap: () => 
+                              ModalUtils.showCustomizeModal(
                                   teamProvider.teamMembers[index], context),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -92,6 +95,23 @@ class _TeamPageState extends State<TeamPage> {
       },
     );
   }
+
+void _showCustomizeModal(TeamMember member, BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(44),
+        topRight: Radius.circular(44),
+      ),
+    ),
+    builder: (context) {
+      return CustomizeModal(member: member);
+    },
+  );
+}
+
 
   void _showMemberDetail(TeamMember member, BuildContext context) {
     showModalBottomSheet(
@@ -257,7 +277,10 @@ class _AddMemberButtonState extends State<AddMemberButton> {
               onPressed: () {
                 Navigator.of(context).pop(); // Tutup dialog
               },
-              child: const Text('Batal',style: TextStyle(color: Colors.black),),
+              child: const Text(
+                'Batal',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -275,10 +298,13 @@ class _AddMemberButtonState extends State<AddMemberButton> {
                 teamProvider.addMember(newMember);
                 Navigator.of(context).pop(); // Tutup dialog setelah selesai
               },
-               style: ElevatedButton.styleFrom(
-                backgroundColor:  const Color.fromRGBO(215, 252, 112, 1),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
               ),
-              child: const Text('Simpan',style: TextStyle(color: Colors.black),),
+              child: const Text(
+                'Simpan',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
           ],
         );
@@ -395,8 +421,7 @@ class _EditMemberButtonState extends State<EditMemberButton> {
               onPressed: () {
                 Navigator.of(context).pop(); // Tutup dialog
               },
-              child: const Text('Batal',
-                  style: TextStyle(color: Colors.black)),
+              child: const Text('Batal', style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -440,8 +465,7 @@ class DeleteMemberButton extends StatelessWidget {
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(
-                    'Apakah Anda yakin ingin menghapus anggota tim ini?'),
+                Text('Apakah Anda yakin ingin menghapus anggota tim ini?'),
               ],
             ),
           ),
@@ -450,7 +474,10 @@ class DeleteMemberButton extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop(); // Tutup dialog
               },
-              child: const Text('Batal',style: TextStyle(color: Colors.black),),
+              child: const Text(
+                'Batal',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -463,7 +490,10 @@ class DeleteMemberButton extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-              child: const Text('Hapus',style: TextStyle(color: Colors.white),),
+              child: const Text(
+                'Hapus',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );

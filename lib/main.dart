@@ -19,7 +19,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => JenisTransaksiProvider()),
       ],
       child: const MyApp(),
-    ),
+    ),  
   );
 }
 class MyApp extends StatelessWidget {
