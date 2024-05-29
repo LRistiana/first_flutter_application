@@ -1,6 +1,4 @@
-// import 'dart:ffi';
 import 'package:flutter/material.dart';
-import 'package:first_flutter_application/model/team_members_model.dart';
 
 class DeleteEventModal extends StatelessWidget {
   const DeleteEventModal({super.key, required this.onDelete});

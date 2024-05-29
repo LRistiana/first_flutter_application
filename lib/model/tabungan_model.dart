@@ -2,8 +2,6 @@ import 'package:first_flutter_application/model/team_members_model.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
-import 'package:first_flutter_application/model/team_members_model.dart';
 
 class Tabungan {
   late int id;

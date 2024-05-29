@@ -47,7 +47,7 @@ class TeamProvider with ChangeNotifier {
 
   Future<void> fetchTeamMembers() async {
     try {
-      Response response = await Dio().get('$_apiUrl',
+      Response response = await Dio().get(_apiUrl,
           options: Options(
               headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
       if (response.statusCode == 200) {
@@ -85,8 +85,12 @@ class TeamProvider with ChangeNotifier {
       Response response = await Dio().delete('$_apiUrl/$memberId',
           options: Options(
               headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
+      if (response.statusCode != 200) {
       _teamMembers.removeWhere((member) => member.id == memberId);
       notifyListeners();
+      } else {
+        throw Exception('Gagal menghapus anggota tim');
+      }
     } catch (error) {
       print('Error saat menghapus anggota: $error');
     }

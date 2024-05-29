@@ -1,6 +1,6 @@
 import 'package:first_flutter_application/utils/modal_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:first_flutter_application/model/team_members_model.dart'; // Import the provider from the models folder
+import 'package:first_flutter_application/model/team_members_model.dart'; 
 
 class CustomizeModal extends StatelessWidget {
   const CustomizeModal({super.key, required this.member});
