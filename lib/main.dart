@@ -1,5 +1,3 @@
-// import 'dart:js';
-
 import 'package:first_flutter_application/pages/home_page.dart';
 import 'package:first_flutter_application/pages/intro_page.dart';
 import 'package:first_flutter_application/pages/sign_in_page.dart';
@@ -13,7 +11,7 @@ import 'model/tabungan_model.dart';
 void main() {
   runApp(
     MultiProvider(
-      providers: [
+      providers: [  
         ChangeNotifierProvider(create: (_) => TeamProvider()),
         ChangeNotifierProvider(create: (_) => TabunganProvider()),
         ChangeNotifierProvider(create: (_) => JenisTransaksiProvider()),
@@ -57,4 +55,3 @@ class TabunganPageWrapper extends StatelessWidget {
     return const SizedBox.shrink();
   }
 }
-

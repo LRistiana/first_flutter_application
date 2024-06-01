@@ -66,6 +66,8 @@ class _TeamPageState extends State<TeamPage> {
                                 },
                               ),
                               onTap: () => 
+                              // _showMemberDetail(
+                              //     teamProvider.teamMembers[index], context),
                               ModalUtils.showCustomizeModal(
                                   teamProvider.teamMembers[index], context),
                               trailing: Row(

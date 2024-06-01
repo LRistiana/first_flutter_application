@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:get_storage/get_storage.dart';
+// import 'package:logger/logger.dart';
 
 class TeamMember {
   final int id;
@@ -31,7 +32,7 @@ class TeamMember {
       alamat: json['alamat'],
       tanggalLahir: json['tgl_lahir'],
       telepon: json['telepon'],
-      imageUrl: json['image_url'] ?? '', 
+      imageUrl: json['image_url'] ?? '',
       statusAktif: json['status_aktif'],
     );
   }
@@ -85,38 +86,46 @@ class TeamProvider with ChangeNotifier {
       Response response = await Dio().delete('$_apiUrl/$memberId',
           options: Options(
               headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
-      if (response.statusCode != 200) {
-      _teamMembers.removeWhere((member) => member.id == memberId);
-      notifyListeners();
+      // headers: {"Authorization": "Bearer hai"}));
+
+      if (response.statusCode == 200) {
+        _teamMembers.removeWhere((member) => member.id == memberId);
+        notifyListeners();
       } else {
-        throw Exception('Gagal menghapus anggota tim');
+        throw Exception('Gagal menghapus anggota tim $memberId');
       }
-    } catch (error) {
-      print('Error saat menghapus anggota: $error');
+    } on DioException catch (error) {
+      print(error);
     }
   }
 
   Future<void> addMember(TeamMember member) async {
     try {
-      final response = await Dio().post(_apiUrl,
-          data: {
-            "nomor_induk": member.nomorInduk,
-            "nama": member.nama,
-            "alamat": member.alamat,
-            "telepon": member.telepon,
-            "tgl_lahir": member.tanggalLahir,
-          },
-          options: Options(
-            headers: {
-              "Authorization": "Bearer ${myStorage.read("token")}",
-            },
-          ));
+      final response =
+          await Dio().post("https://mobileapis.manpits.xyz/api/anggota",
+              data: {
+                "nomor_induk": member.nomorInduk,
+                "nama": member.nama,
+                "alamat": member.alamat,
+                "telepon": member.telepon,
+                "tgl_lahir": member.tanggalLahir,
+                // "nomor_induk": "999999",
+                // "nama": "sajajaj",
+                // "alamat": "ajasjn",
+                // "telepon": "99992222",
+                // "tgl_lahir": "2021-02-12",
+              },
+              options: Options(
+                headers: {
+                  "Authorization": "Bearer ${myStorage.read("token")}",
+                },
+              ));
       if (response.statusCode == 200) {
         fetchTeamMembers();
       } else {
         throw Exception('Gagal menambahkan anggota tim');
       }
-    } catch (error) {
+    } on DioException catch (error) {
       print('Error: $error');
     }
   }

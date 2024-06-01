@@ -51,7 +51,7 @@ class CustomizeModal extends StatelessWidget {
                   icon: const Icon(Icons.delete, color: Colors.black),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {ModalUtils.showEditMemberModal(context,member);},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
