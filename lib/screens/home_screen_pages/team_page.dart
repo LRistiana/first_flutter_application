@@ -13,15 +13,18 @@ class TeamPage extends StatefulWidget {
 }
 
 class _TeamPageState extends State<TeamPage> {
-  @override
-  void initState() {
-    super.initState();
-    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    teamProvider.fetchTeamMembers();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+  //   teamProvider.fetchTeamMembers();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    teamProvider.fetchTeamMembers();
+
     return Consumer<TeamProvider>(
       builder: (context, teamProvider, child) {
         return Padding(
@@ -57,16 +60,17 @@ class _TeamPageState extends State<TeamPage> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    return const Text('Loading...');
+                                    return const Text('Saldo : Rp. -');
                                   } else if (snapshot.hasError) {
                                     return const Text('Error');
                                   } else {
-                                    return Text('Saldo: Rp.${snapshot.data}');
+                                    return Text('Saldo : Rp.${snapshot.data}');
                                   }
                                 },
                               ),
                               onTap: () =>
-                                  Navigator.pushNamed(context, '/member')
+                                  Navigator.pushNamed(context, '/member',
+                                  arguments: teamProvider.teamMembers[index].id)
                                   // _showMemberDetail(
                                   //     teamProvider.teamMembers[index], context),
                                   // ModalUtils.showCustomizeModal(

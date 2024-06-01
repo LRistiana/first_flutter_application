@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         '/signIn' : (context) => const  SignIn(),
         '/signUp' : (context) =>  const SignUp(),
         '/homePage' : (context) =>  const HomeScreen(),
-        '/member' : (context) =>  const MemberScreen(),
+        '/member' : (context) =>   MemberScreenWrapper(),
         '/tabungan' : (context) =>  TabunganPageWrapper(),
       },
       initialRoute: '/',
@@ -45,6 +45,22 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class MemberScreenWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final int? memberID = ModalRoute.of(context)?.settings.arguments as int?;
+    
+      if (memberID == null) {
+        // Jika argument null, navigasi kembali ke homepage
+        Navigator.of(context).pushReplacementNamed('/homePage');
+      } else {
+        return MemberScreen(memberID: memberID);
+      }
+      
+    // Jika memberID null, maka akan kembali ke homepage
+    return const SizedBox.shrink();
+  }
+}
 class TabunganPageWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

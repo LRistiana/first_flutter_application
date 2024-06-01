@@ -40,11 +40,23 @@ class TeamMember {
 
 class TeamProvider with ChangeNotifier {
   List<TeamMember> _teamMembers = [];
+  TeamMember _member = TeamMember(
+    id: 0,
+    nomorInduk: 0,
+    nama: '',
+    alamat: '',
+    tanggalLahir: '',
+    telepon: '',
+    imageUrl: '',
+    statusAktif: 0,
+  );
+
   final myStorage = GetStorage();
   static const String _apiUrl = "https://mobileapis.manpits.xyz/api/anggota";
   static const String _apiUrlSaldo = "https://mobileapis.manpits.xyz/api/saldo";
 
   List<TeamMember> get teamMembers => _teamMembers;
+  TeamMember get member => _member; 
 
   Future<void> fetchTeamMembers() async {
     try {
@@ -60,6 +72,27 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal mengambil data dari API');
       }
     } catch (error) {
+      // ignore: avoid_print
+      print('Error: $error');
+    }
+  }
+
+  Future<void> fetchMember(int memberID) async {
+    try {
+      Response response = await Dio().get("$_apiUrl/$memberID",
+          options: Options(
+              headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
+      if (response.statusCode == 200) {
+        final dynamic anggotas = response.data['data']['anggota'];
+        _member = TeamMember.fromJson(anggotas);
+        notifyListeners();
+        // ignore: avoid_print
+        print("sucess fetch member");
+      } else {
+        throw Exception('Gagal mengambil data dari API');
+      }
+    } catch (error) {
+      // ignore: avoid_print
       print('Error: $error');
     }
   }
@@ -76,6 +109,7 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal mengambil data dari API');
       }
     } catch (error) {
+      // ignore: avoid_print
       print('Error: $error');
       return 0;
     }
@@ -95,6 +129,7 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal menghapus anggota tim $memberId');
       }
     } on DioException catch (error) {
+      // ignore: avoid_print
       print(error);
     }
   }
@@ -126,6 +161,7 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal menambahkan anggota tim');
       }
     } on DioException catch (error) {
+      // ignore: avoid_print
       print('Error: $error');
     }
   }
@@ -152,6 +188,7 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal mengupdate anggota tim');
       }
     } catch (error) {
+      // ignore: avoid_print
       print('Error: $error');
     }
   }
