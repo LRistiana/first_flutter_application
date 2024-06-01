@@ -1,8 +1,8 @@
-import 'package:first_flutter_application/pages/home_page.dart';
-import 'package:first_flutter_application/pages/intro_page.dart';
-import 'package:first_flutter_application/pages/sign_in_page.dart';
-import 'package:first_flutter_application/pages/sign_up_page.dart';
-import 'package:first_flutter_application/pages/tabungan_page.dart';
+import 'package:first_flutter_application/screens/home_screen.dart';
+import 'package:first_flutter_application/screens/intro_screen.dart';
+import 'package:first_flutter_application/screens/sign_in_screen.dart';
+import 'package:first_flutter_application/screens/sign_up_screen.dart';
+import 'package:first_flutter_application/screens/tabungan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'model/team_members_model.dart'; 

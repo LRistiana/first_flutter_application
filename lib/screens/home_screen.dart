@@ -1,19 +1,19 @@
 import "package:dio/dio.dart";
-import "package:first_flutter_application/pages/profile_page.dart";
-import "package:first_flutter_application/pages/team_page.dart";
+import "package:first_flutter_application/screens/home_screen_pages/profile_page.dart";
+import "package:first_flutter_application/screens/home_screen_pages/team_page.dart";
 import "package:first_flutter_application/widgets/utils/bottom_nav_bar.dart";
 import "package:flutter/material.dart";
 import "package:get_storage/get_storage.dart";
 import "package:logger/logger.dart";
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   var logger = Logger();
   final myStorage = GetStorage();
   int _selectedIndex = 0;

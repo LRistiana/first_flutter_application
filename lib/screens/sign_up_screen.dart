@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:first_flutter_application/pages/sign_in_page.dart';
+import 'package:first_flutter_application/screens/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:email_validator/email_validator.dart';
