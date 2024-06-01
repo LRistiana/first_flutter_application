@@ -1,9 +1,9 @@
 import 'package:first_flutter_application/utils/modal_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:first_flutter_application/model/team_members_model.dart'; 
-import 'package:first_flutter_application/model/tabungan_model.dart'; 
-import 'package:first_flutter_application/widgets/modals/customize_modal.dart'; 
+import 'package:first_flutter_application/model/team_members_model.dart';
+import 'package:first_flutter_application/model/tabungan_model.dart';
+import 'package:first_flutter_application/widgets/modals/customize_modal.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -65,21 +65,26 @@ class _TeamPageState extends State<TeamPage> {
                                   }
                                 },
                               ),
-                              onTap: () => 
-                              // _showMemberDetail(
-                              //     teamProvider.teamMembers[index], context),
-                              ModalUtils.showCustomizeModal(
-                                  teamProvider.teamMembers[index], context),
+                              onTap: () =>
+                                  Navigator.pushNamed(context, '/member')
+                                  // _showMemberDetail(
+                                  //     teamProvider.teamMembers[index], context),
+                                  // ModalUtils.showCustomizeModal(
+                                  //     teamProvider.teamMembers[index], context),
+                                  ,
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      Navigator.pushNamed(context, '/tabungan',
-                                          arguments: teamProvider
-                                              .teamMembers[index].id);
+                                      ModalUtils.showCustomizeModal(
+                                          teamProvider.teamMembers[index],
+                                          context);
+                                      // Navigator.pushNamed(context, '/tabungan',
+                                      //     arguments: teamProvider
+                                      //         .teamMembers[index].id);
                                     },
-                                    icon: const Icon(Icons.history,
+                                    icon: const Icon(Icons.more_vert,
                                         color: Colors.white),
                                   ),
                                 ],
@@ -89,7 +94,7 @@ class _TeamPageState extends State<TeamPage> {
                         );
                       },
                     ),
-              AddMemberButton(),
+              const AddMemberButton(),
             ],
           ),
         );
@@ -97,22 +102,21 @@ class _TeamPageState extends State<TeamPage> {
     );
   }
 
-void _showCustomizeModal(TeamMember member, BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(44),
-        topRight: Radius.circular(44),
+  void _showCustomizeModal(TeamMember member, BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(44),
+          topRight: Radius.circular(44),
+        ),
       ),
-    ),
-    builder: (context) {
-      return CustomizeModal(member: member);
-    },
-  );
-}
-
+      builder: (context) {
+        return CustomizeModal(member: member);
+      },
+    );
+  }
 
   void _showMemberDetail(TeamMember member, BuildContext context) {
     showModalBottomSheet(
@@ -183,10 +187,7 @@ class AddMemberButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.bottomRight,
-      padding: const EdgeInsets.only(
-          bottom: 20,
-          right:
-              20), 
+      padding: const EdgeInsets.only(bottom: 20, right: 20),
       child: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
         child: const Icon(
@@ -200,7 +201,6 @@ class AddMemberButton extends StatelessWidget {
     );
   }
 }
-
 
 // class AddMemberButton extends StatefulWidget {
 //   const AddMemberButton({super.key});

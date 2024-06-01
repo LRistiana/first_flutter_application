@@ -3,6 +3,8 @@ import 'package:first_flutter_application/screens/intro_screen.dart';
 import 'package:first_flutter_application/screens/sign_in_screen.dart';
 import 'package:first_flutter_application/screens/sign_up_screen.dart';
 import 'package:first_flutter_application/screens/tabungan_page.dart';
+import 'package:first_flutter_application/screens/member_screen.dart';
+import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'model/team_members_model.dart'; 
@@ -27,14 +29,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/' : (context) => const  IntroPage(),
+        '/' : (context) => const  IntroScreen(),
         '/signIn' : (context) => const  SignIn(),
         '/signUp' : (context) =>  const SignUp(),
-        '/homePage' : (context) =>  const HomePage(),
+        '/homePage' : (context) =>  const HomeScreen(),
+        '/member' : (context) =>  const MemberScreen(),
         '/tabungan' : (context) =>  TabunganPageWrapper(),
       },
       initialRoute: '/',
       checkerboardOffscreenLayers: false,
+      theme: ThemeData(
+        primaryColor: GeneralColor.primaryColor,
+      ),
     );
   }
 }
