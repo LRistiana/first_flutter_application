@@ -20,25 +20,6 @@ class EditMemberEventModal extends StatefulWidget {
 }
 
 class _EditMemberEventModalState extends State<EditMemberEventModal> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController telpController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    nameController.text = widget.member.nama;
-    addressController.text = widget.member.alamat;
-    telpController.text = widget.member.telepon;
-  }
-
-  @override
-  void dispose() {
-    // Pastikan untuk membersihkan controller ketika widget dihapus
-    telpController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Dialog(

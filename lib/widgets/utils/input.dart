@@ -111,7 +111,6 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
                 ? 'Select date'
                 : widget.dateNotifer.value!.toLocal().toString().split(' ')[0],
             style: const TextStyle(
-              decoration: TextDecoration.underline,
               color: Colors.black,
             ),
           ),

@@ -54,9 +54,26 @@ class ModalUtils {
   }
 
   static void showAddMemberModal(BuildContext context) {
+    inputController.controllerReset();
     showDialog(
       context: context,
-      builder: (context) => AddMemberEventModal(),
+      builder: (context) => AddMemberEventModal(
+        inputController: inputController,
+        onAdd: (){
+          final newMember = TeamMember(
+            id: int.parse(inputController.nomerInduk.text),
+            nomorInduk: int.parse(inputController.nomerInduk.text),
+            nama: inputController.name.text,
+            alamat: inputController.address.text,
+            telepon: inputController.telp.text,
+            tanggalLahir: inputController.date.value.toString(),
+            imageUrl: "",
+            statusAktif: 1,
+          );
+          final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+          teamProvider.addMember(newMember);
+        }
+      ),
     );
   }
 
@@ -88,9 +105,11 @@ class ModalUtils {
           if (editedMember == member) {
             return;
           }
-          final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+          final teamProvider =
+              Provider.of<TeamProvider>(context, listen: false);
           teamProvider.updateMember(editedMember);
-          showDeleteSuccesModal(context);},
+          // showDeleteSuccesModal(context);
+        },
       ),
     );
   }

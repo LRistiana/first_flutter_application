@@ -1,17 +1,20 @@
+import 'package:first_flutter_application/widgets/utils/input.dart';
 import 'package:flutter/material.dart';
+import 'package:first_flutter_application/utils/input_controller_util.dart';
 
 class AddMemberEventModal extends StatefulWidget {
-  const AddMemberEventModal({super.key});
+  const AddMemberEventModal(
+      {super.key,
+      required this.inputController,
+      required this.onAdd});
+  final InputController inputController;
+  final VoidCallback onAdd;
 
   @override
   State<AddMemberEventModal> createState() => _AddMemberEventModalState();
 }
 
 class _AddMemberEventModalState extends State<AddMemberEventModal> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController telpController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -24,7 +27,7 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
           borderRadius: BorderRadius.circular(36),
           color: const Color.fromRGBO(215, 252, 112, 1),
         ),
-        height: 450,
+        height: 550,
         width: 350,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -32,7 +35,7 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Add Member",
+                "Add New Member",
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -41,21 +44,40 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
               const SizedBox(
                 height: 20,
               ),
-              TextInput(hintText: 'Name', controller: nameController),
-              TextInput(hintText: 'Address', controller: addressController),
-              TextInput(hintText: 'Telp', controller: telpController),
-              const Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Date of Birth',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.black,
-                        )),
-                    DatePickerWidget(),
-                  ],
+              TextInput(
+                  hintText: 'Nomer Induk',
+                  controller: widget.inputController.nomerInduk),
+              TextInput(
+                  hintText: 'Name', controller: widget.inputController.name),
+              TextInput(
+                  hintText: 'Address',
+                  controller: widget.inputController.address),
+              TextInput(
+                  hintText: 'Telp', controller: widget.inputController.telp),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.black, // Color of the underline
+                        width: 1.0, // Thickness of the underline
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Date of Birth',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          )),
+                      DatePickerWidget(
+                          dateNotifer: widget.inputController.date),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(
@@ -75,6 +97,7 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
                   ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        widget.onAdd();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
@@ -96,121 +119,6 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class TextInput extends StatefulWidget {
-  const TextInput(
-      {super.key, required this.hintText, required this.controller});
-  final String hintText;
-  final TextEditingController controller;
-
-  @override
-  _TextInputState createState() => _TextInputState();
-}
-
-class _TextInputState extends State<TextInput> {
-  bool _isFocused = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Focus(
-      onFocusChange: (hasFocus) {
-        setState(() {
-          _isFocused = hasFocus;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.all(8.0),
-        width: _isFocused ? 300.0 : 280.0, // Change these values as needed
-        child: TextField(
-          controller: widget.controller,
-          decoration: InputDecoration(
-            hintText: widget.hintText,
-            border: const UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey,
-                width: 1.0,
-              ),
-            ),
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.black,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.black,
-                width: 3.0,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DatePickerWidget extends StatefulWidget {
-  const DatePickerWidget({super.key});
-
-  @override
-  _DatePickerWidgetState createState() => _DatePickerWidgetState();
-}
-
-class _DatePickerWidgetState extends State<DatePickerWidget> {
-  DateTime? _selectedDate;
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Colors.black, // Header background color
-              onPrimary: Color.fromRGBO(215, 252, 112, 1), // Header text color
-              surface: Colors.white, // Calendar background color
-              onSurface: Colors.black, // Calendar text color
-            ),
-            dialogBackgroundColor:
-                Colors.white, // Background color of the dialog
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        TextButton(
-          onPressed: () => _selectDate(context),
-          child: Text(
-            _selectedDate == null
-                ? 'Select date'
-                : _selectedDate!.toLocal().toString().split(' ')[0],
-            style: const TextStyle(
-              decoration: TextDecoration.underline,
-              color: Colors.black,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

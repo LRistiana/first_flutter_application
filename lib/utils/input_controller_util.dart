@@ -21,5 +21,13 @@ class InputController {
     dateNotifier.dispose();
   }
 
+  void controllerReset() {
+    nameController.clear();
+    nomerIndukController.clear();
+    telpController.clear();
+    addressController.clear();
+    dateNotifier.value = null;
+  }
+
   InputController();
 }

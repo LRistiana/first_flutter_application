@@ -1,9 +1,9 @@
 import 'package:first_flutter_application/utils/modal_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:first_flutter_application/model/team_members_model.dart'; // Import the provider from the models folder
-import 'package:first_flutter_application/model/tabungan_model.dart'; // Import the provider from the models folder
-import 'package:first_flutter_application/widgets/modals/customize_modal.dart'; // Import the provider from the models folder
+import 'package:first_flutter_application/model/team_members_model.dart'; 
+import 'package:first_flutter_application/model/tabungan_model.dart'; 
+import 'package:first_flutter_application/widgets/modals/customize_modal.dart'; 
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -176,18 +176,8 @@ void _showCustomizeModal(TeamMember member, BuildContext context) {
   }
 }
 
-class AddMemberButton extends StatefulWidget {
+class AddMemberButton extends StatelessWidget {
   const AddMemberButton({super.key});
-  @override
-  State<AddMemberButton> createState() => _AddMemberButtonState();
-}
-
-class _AddMemberButtonState extends State<AddMemberButton> {
-  final TextEditingController idController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
-  final TextEditingController telephoneController = TextEditingController();
-  DateTime? selectedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +186,7 @@ class _AddMemberButtonState extends State<AddMemberButton> {
       padding: const EdgeInsets.only(
           bottom: 20,
           right:
-              20), // Ubah padding agar tombol tidak terlalu dekat dengan tepi layar
+              20), 
       child: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
         child: const Icon(
@@ -204,115 +194,151 @@ class _AddMemberButtonState extends State<AddMemberButton> {
           color: Colors.black,
         ),
         onPressed: () {
-          _showAddMemberDialog(
-              context); // Panggil fungsi untuk menampilkan dialog tambah anggota
+          ModalUtils.showAddMemberModal(context);
         },
       ),
     );
   }
-
-  void _showAddMemberDialog(BuildContext context) {
-    // Implementasi dialog tambah anggota tim di sini
-    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Tambah Anggota Tim'),
-          contentPadding: EdgeInsets.zero,
-          content: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextInput(hint: "ID Number", textController: idController),
-                  TextInput(hint: "Name", textController: nameController),
-                  TextInput(hint: "Address", textController: addressController),
-                  TextInput(
-                      hint: "Telephone", textController: telephoneController),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("Date of Birth"),
-                        ElevatedButton(
-                          onPressed: () async {
-                            final DateTime? dateTime = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime(1900),
-                              lastDate: DateTime(2050),
-                            );
-                            if (dateTime != null) {
-                              setState(() {
-                                // Lakukan sesuatu dengan tanggal yang dipilih, misalnya menyimpannya ke dalam variabel atau menampilkan di layar
-                                print('Selected date: $dateTime');
-                                selectedDate = dateTime;
-                              });
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              side: BorderSide(color: Colors.black),
-                            ),
-                          ),
-                          child: Text(selectedDate != null
-                              ? selectedDate.toString()
-                              : "Pick a Date"),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog
-              },
-              child: const Text(
-                'Batal',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final newMember = TeamMember(
-                    id: int.parse(idController.text),
-                    nomorInduk: int.parse(idController.text),
-                    nama: nameController.text,
-                    alamat: addressController.text,
-                    telepon: telephoneController.text,
-                    tanggalLahir: selectedDate.toString(),
-                    imageUrl: '',
-                    statusAktif: 1);
-                // Simpan ke penyimpanan atau API
-                // Simpan ke penyimpanan atau API, misalnya:
-                teamProvider.addMember(newMember);
-                Navigator.of(context).pop(); // Tutup dialog setelah selesai
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
-              ),
-              child: const Text(
-                'Simpan',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
+
+
+// class AddMemberButton extends StatefulWidget {
+//   const AddMemberButton({super.key});
+//   @override
+//   State<AddMemberButton> createState() => _AddMemberButtonState();
+// }
+
+// class _AddMemberButtonState extends State<AddMemberButton> {
+//   final TextEditingController idController = TextEditingController();
+//   final TextEditingController nameController = TextEditingController();
+//   final TextEditingController addressController = TextEditingController();
+//   final TextEditingController telephoneController = TextEditingController();
+//   DateTime? selectedDate;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       alignment: Alignment.bottomRight,
+//       padding: const EdgeInsets.only(
+//           bottom: 20,
+//           right:
+//               20), // Ubah padding agar tombol tidak terlalu dekat dengan tepi layar
+//       child: FloatingActionButton(
+//         backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
+//         child: const Icon(
+//           Icons.add,
+//           color: Colors.black,
+//         ),
+//         onPressed: () {
+//           _showAddMemberDialog(
+//               context); // Panggil fungsi untuk menampilkan dialog tambah anggota
+//         },
+//       ),
+//     );
+//   }
+
+//   void _showAddMemberDialog(BuildContext context) {
+//     // Implementasi dialog tambah anggota tim di sini
+//     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           title: const Text('Tambah Anggota Tim'),
+//           contentPadding: EdgeInsets.zero,
+//           content: SingleChildScrollView(
+//             child: Padding(
+//               padding: const EdgeInsets.all(8.0),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: [
+//                   TextInput(hint: "ID Number", textController: idController),
+//                   TextInput(hint: "Name", textController: nameController),
+//                   TextInput(hint: "Address", textController: addressController),
+//                   TextInput(
+//                       hint: "Telephone", textController: telephoneController),
+//                   Padding(
+//                     padding: const EdgeInsets.all(8.0),
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         const Text("Date of Birth"),
+//                         ElevatedButton(
+//                           onPressed: () async {
+//                             final DateTime? dateTime = await showDatePicker(
+//                               context: context,
+//                               firstDate: DateTime(1900),
+//                               lastDate: DateTime(2050),
+//                             );
+//                             if (dateTime != null) {
+//                               setState(() {
+//                                 // Lakukan sesuatu dengan tanggal yang dipilih, misalnya menyimpannya ke dalam variabel atau menampilkan di layar
+//                                 print('Selected date: $dateTime');
+//                                 selectedDate = dateTime;
+//                               });
+//                             }
+//                           },
+//                           style: ElevatedButton.styleFrom(
+//                             backgroundColor: Colors.white,
+//                             foregroundColor: Colors.black,
+//                             shape: const RoundedRectangleBorder(
+//                               borderRadius:
+//                                   BorderRadius.all(Radius.circular(10)),
+//                               side: BorderSide(color: Colors.black),
+//                             ),
+//                           ),
+//                           child: Text(selectedDate != null
+//                               ? selectedDate.toString()
+//                               : "Pick a Date"),
+//                         )
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop(); // Tutup dialog
+//               },
+//               child: const Text(
+//                 'Batal',
+//                 style: TextStyle(color: Colors.black),
+//               ),
+//             ),
+//             ElevatedButton(
+//               onPressed: () {
+//                 final newMember = TeamMember(
+//                     id: int.parse(idController.text),
+//                     nomorInduk: int.parse(idController.text),
+//                     nama: nameController.text,
+//                     alamat: addressController.text,
+//                     telepon: telephoneController.text,
+//                     tanggalLahir: selectedDate.toString(),
+//                     imageUrl: '',
+//                     statusAktif: 1);
+//                 // Simpan ke penyimpanan atau API
+//                 // Simpan ke penyimpanan atau API, misalnya:
+//                 teamProvider.addMember(newMember);
+//                 Navigator.of(context).pop(); // Tutup dialog setelah selesai
+//               },
+//               style: ElevatedButton.styleFrom(
+//                 backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
+//               ),
+//               child: const Text(
+//                 'Simpan',
+//                 style: TextStyle(color: Colors.black),
+//               ),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
 
 class EditMemberButton extends StatefulWidget {
   const EditMemberButton({super.key, required this.member});
