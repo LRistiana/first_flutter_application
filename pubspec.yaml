@@ -38,6 +38,7 @@ dependencies:
   sticky_headers: ^0.3.0
   sliding_up_panel: ^2.0.0
   fl_chart: ^0.35.0
+  intl: ^0.17.0
   
   
 

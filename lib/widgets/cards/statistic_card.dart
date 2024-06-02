@@ -1,8 +1,10 @@
+import 'package:first_flutter_application/model/team_members_model.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 
 class StatisticCard extends StatefulWidget {
-  const StatisticCard({super.key});
+  const StatisticCard({super.key, required this.member});
+  final TeamMember member;
 
   @override
   State<StatisticCard> createState() => _StatisticCardState();
@@ -25,7 +27,64 @@ class _StatisticCardState extends State<StatisticCard> {
             offset: Offset(0, 3),
           ),
         ],
-      ));
+      ),
+      child: Column(
+        children: [
+          // Menampilkan nomer induk member
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Icon(Icons.numbers_rounded,
+                  color: TextColor.darkTextColor, size: 24),
+              Text(widget.member.nomorInduk.toString(),
+                  style: const TextStyle(
+                      color: TextColor.darkTextColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
+          // Menampilkan alamat
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Icon(Icons.home,
+                  color: TextColor.darkTextColor, size: 24),
+              Text(widget.member.alamat,
+                  style: const TextStyle(
+                      color: TextColor.darkTextColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
+          // Menampilkan nomer telp
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Icon(Icons.phone,
+                  color: TextColor.darkTextColor, size: 24),
+              Text(widget.member.telepon.toString(),
+                  style: const TextStyle(
+                      color: TextColor.darkTextColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
+          // Menampilkan tanggal lahir
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Icon(Icons.date_range,
+                  color: TextColor.darkTextColor, size: 24),
+              Text(widget.member.tanggalLahir.toString(),
+                  style: const TextStyle(
+                      color: TextColor.darkTextColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 

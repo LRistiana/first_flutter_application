@@ -5,9 +5,9 @@ import 'package:first_flutter_application/utils/input_controller_util.dart';
 class AddMemberEventModal extends StatefulWidget {
   const AddMemberEventModal(
       {super.key,
-      required this.inputController,
+      required this.inputMemberController,
       required this.onAdd});
-  final InputController inputController;
+  final InputMemberController inputMemberController;
   final VoidCallback onAdd;
 
   @override
@@ -46,14 +46,14 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
               ),
               TextInput(
                   hintText: 'Nomer Induk',
-                  controller: widget.inputController.nomerInduk),
+                  controller: widget.inputMemberController.nomerInduk),
               TextInput(
-                  hintText: 'Name', controller: widget.inputController.name),
+                  hintText: 'Name', controller: widget.inputMemberController.name),
               TextInput(
                   hintText: 'Address',
-                  controller: widget.inputController.address),
+                  controller: widget.inputMemberController.address),
               TextInput(
-                  hintText: 'Telp', controller: widget.inputController.telp),
+                  hintText: 'Telp', controller: widget.inputMemberController.telp),
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Container(
@@ -75,7 +75,7 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
                             color: Colors.black,
                           )),
                       DatePickerWidget(
-                          dateNotifer: widget.inputController.date),
+                          dateNotifer: widget.inputMemberController.date),
                     ],
                   ),
                 ),

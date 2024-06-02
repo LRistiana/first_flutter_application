@@ -1,6 +1,7 @@
+import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:flutter/material.dart';
 
-class InputController {
+class InputMemberController {
   late TextEditingController nameController = TextEditingController();
   late TextEditingController nomerIndukController = TextEditingController();
   late TextEditingController telpController = TextEditingController();
@@ -29,5 +30,25 @@ class InputController {
     dateNotifier.value = null;
   }
 
-  InputController();
+  InputMemberController();
+}
+
+class InputSavingController{
+  late TextEditingController nominalController = TextEditingController();
+  JenisTransaksi? selectedJenisTransaksi;
+
+
+  TextEditingController get nominal => nominalController;
+  JenisTransaksi get jenisTransaksi => selectedJenisTransaksi!; 
+
+  void dispose() {
+    nominalController.dispose();
+  }
+
+  void controllerReset() {
+    nominalController.clear();
+    selectedJenisTransaksi = null;
+  }
+
+  InputSavingController();
 }

@@ -7,11 +7,11 @@ class EditMemberEventModal extends StatefulWidget {
   const EditMemberEventModal(
       {super.key,
       required this.member,
-      required this.inputController,
+      required this.inputMemberController,
       required this.onCancel,
       required this.onEdit});
   final TeamMember member;
-  final InputController inputController;
+  final InputMemberController inputMemberController;
   final VoidCallback onCancel;
   final VoidCallback onEdit;
 
@@ -51,14 +51,14 @@ class _EditMemberEventModalState extends State<EditMemberEventModal> {
               ),
               TextInput(
                   hintText: 'Nomer Induk',
-                  controller: widget.inputController.nomerInduk),
+                  controller: widget.inputMemberController.nomerInduk),
               TextInput(
-                  hintText: 'Name', controller: widget.inputController.name),
+                  hintText: 'Name', controller: widget.inputMemberController.name),
               TextInput(
                   hintText: 'Address',
-                  controller: widget.inputController.address),
+                  controller: widget.inputMemberController.address),
               TextInput(
-                  hintText: 'Telp', controller: widget.inputController.telp),
+                  hintText: 'Telp', controller: widget.inputMemberController.telp),
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Container(
@@ -79,7 +79,7 @@ class _EditMemberEventModalState extends State<EditMemberEventModal> {
                             color: Colors.black,
                           )),
                       DatePickerWidget(
-                          dateNotifer: widget.inputController.date),
+                          dateNotifer: widget.inputMemberController.date),
                     ],
                   ),
                 ),
