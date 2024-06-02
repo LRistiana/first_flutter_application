@@ -41,7 +41,6 @@ class _ProfilePageState extends State<ProfilePage> {
   // }
 
   void getUserData() async {
-    var logger = Logger();
     try {
       var response = await Dio().get("$_apiUrl/user",
           options: Options(headers: {
@@ -56,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
         throw DioException.connectionTimeout;
       }
     } on DioException catch (e) {
-      logger.e(e);
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     }
   }
 

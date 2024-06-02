@@ -1,15 +1,18 @@
 import 'package:first_flutter_application/widgets/modals/add_member_event.dart';
+import 'package:first_flutter_application/widgets/modals/add_saving_event.dart';
 import 'package:first_flutter_application/widgets/modals/delete_event.dart';
 import 'package:first_flutter_application/widgets/modals/delete_result.dart';
 import 'package:first_flutter_application/widgets/modals/edit_member_event.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter_application/model/team_members_model.dart';
+import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/widgets/modals/customize_modal.dart';
 import 'package:provider/provider.dart';
 import 'package:first_flutter_application/utils/input_controller_util.dart';
 
-class ModalUtils {
-  static InputController inputController = InputController();
+class ShowModal {
+  static InputMemberController inputMemberController = InputMemberController();
+  static InputSavingController inputSavingController = InputSavingController();
 
   static void showCustomizeModal(TeamMember member, BuildContext context) {
     showModalBottomSheet(
@@ -54,19 +57,19 @@ class ModalUtils {
   }
 
   static void showAddMemberModal(BuildContext context) {
-    inputController.controllerReset();
+    inputMemberController.controllerReset();
     showDialog(
       context: context,
       builder: (context) => AddMemberEventModal(
-        inputController: inputController,
+        inputMemberController: inputMemberController,
         onAdd: (){
           final newMember = TeamMember(
-            id: int.parse(inputController.nomerInduk.text),
-            nomorInduk: int.parse(inputController.nomerInduk.text),
-            nama: inputController.name.text,
-            alamat: inputController.address.text,
-            telepon: inputController.telp.text,
-            tanggalLahir: inputController.date.value.toString(),
+            id: int.parse(inputMemberController.nomerInduk.text),
+            nomorInduk: int.parse(inputMemberController.nomerInduk.text),
+            nama: inputMemberController.name.text,
+            alamat: inputMemberController.address.text,
+            telepon: inputMemberController.telp.text,
+            tanggalLahir: inputMemberController.date.value.toString(),
             imageUrl: "",
             statusAktif: 1,
           );
@@ -77,28 +80,46 @@ class ModalUtils {
     );
   }
 
+  static void showAddSavingModal(BuildContext context, TeamMember member){
+    // final TeamMember member;
+
+    inputSavingController.controllerReset();
+    showDialog(
+      context: context,
+      builder: (context) => AddSavingEventModal(
+        inputSavingController: inputSavingController,
+        onAdd: (){
+          final Tabungan newTabungan = Tabungan(transaksiID: inputSavingController.transactionType.value!.id,nominal: int.parse(inputSavingController.nominal.text));
+          final savingProvider = Provider.of<TabunganProvider>(context, listen: false);
+          savingProvider.addTabungan(member, newTabungan);
+        }
+      ),
+    );
+
+  }
+
   static void showEditMemberModal(BuildContext context, TeamMember member) {
-    inputController.name.text = member.nama;
-    inputController.nomerInduk.text = member.nomorInduk.toString();
-    inputController.telp.text = member.telepon;
-    inputController.address.text = member.alamat;
-    inputController.date.value = DateTime.parse(member.tanggalLahir);
+    inputMemberController.name.text = member.nama;
+    inputMemberController.nomerInduk.text = member.nomorInduk.toString();
+    inputMemberController.telp.text = member.telepon;
+    inputMemberController.address.text = member.alamat;
+    inputMemberController.date.value = DateTime.parse(member.tanggalLahir);
     Navigator.pop(context);
 
     showDialog(
       context: context,
       builder: (context) => EditMemberEventModal(
         member: member,
-        inputController: inputController,
+        inputMemberController: inputMemberController,
         onCancel: () => showCustomizeModal(member, context),
         onEdit: () {
           final editedMember = TeamMember(
             id: member.id,
-            nomorInduk: int.parse(inputController.nomerInduk.text),
-            nama: inputController.name.text,
-            alamat: inputController.address.text,
-            telepon: inputController.telp.text,
-            tanggalLahir: inputController.date.value.toString(),
+            nomorInduk: int.parse(inputMemberController.nomerInduk.text),
+            nama: inputMemberController.name.text,
+            alamat: inputMemberController.address.text,
+            telepon: inputMemberController.telp.text,
+            tanggalLahir: inputMemberController.date.value.toString(),
             imageUrl: "",
             statusAktif: 1,
           );

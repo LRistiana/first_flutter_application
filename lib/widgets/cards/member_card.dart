@@ -1,9 +1,13 @@
+import 'package:first_flutter_application/model/team_members_model.dart';
+import 'package:first_flutter_application/utils/format/currency.dart';
+import 'package:first_flutter_application/utils/modal/modal_utils.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 
 class MemberCard extends StatelessWidget {
-  const MemberCard({super.key, required this.getSaldo});
+  const MemberCard({super.key, required this.getSaldo, required this.member});
   final Future<int> Function() getSaldo;
+  final TeamMember member;
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +39,8 @@ class MemberCard extends StatelessWidget {
             future: getSaldo(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Text(
-                  "Rp. -",
+                return const Text(
+                  "Rp -",
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 36,
@@ -46,7 +50,7 @@ class MemberCard extends StatelessWidget {
               } else if (snapshot.hasError) {
                 return Text(
                   "Error: ${snapshot.error}",
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.red,
                     fontSize: 20,
                   ),
@@ -55,14 +59,16 @@ class MemberCard extends StatelessWidget {
                 return AnimatedBalance(
                   startValue: 0, // Ganti dengan nilai saldo sebelumnya jika ada
                   endValue: snapshot.data!,
-                  duration: Duration(seconds: 2), // Durasi animasi
+                  duration: const Duration(seconds: 1), // Durasi animasi
                 );
               }
             },
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              ShowModal.showAddSavingModal(context, member);
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
@@ -113,8 +119,8 @@ class AnimatedBalance extends StatelessWidget {
       duration: duration,
       builder: (context, value, child) {
         return Text(
-          'Rp. $value',
-          style: TextStyle(
+          CurrencyFormatter.rupiah(value),
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 36,
             fontWeight: FontWeight.bold,

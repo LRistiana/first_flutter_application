@@ -1,6 +1,7 @@
+import 'package:first_flutter_application/model/tabungan_model.dart';
+import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:provider/provider.dart';
 
 class TextInput extends StatefulWidget {
   const TextInput(
@@ -31,8 +32,10 @@ class _TextInputState extends State<TextInput> {
           controller: widget.controller,
           decoration: InputDecoration(
             labelText: widget.hintText,
-             labelStyle: TextStyle(
-              color: _isFocused ? Colors.grey[600] : Colors.black, // Change color based on focus
+            labelStyle: TextStyle(
+              color: _isFocused
+                  ? Colors.grey[600]
+                  : Colors.black, // Change color based on focus
             ),
             border: const UnderlineInputBorder(
               borderSide: BorderSide(
@@ -68,8 +71,6 @@ class DatePickerWidget extends StatefulWidget {
 }
 
 class _DatePickerWidgetState extends State<DatePickerWidget> {
-
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -116,6 +117,97 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class TransactionType extends StatefulWidget {
+  const TransactionType({super.key, required this.selectedTypeTransaction});
+  final ValueNotifier<JenisTransaksi?> selectedTypeTransaction;
+
+  @override
+  State<TransactionType> createState() => _TransactionTypeState();
+}
+
+class _TransactionTypeState extends State<TransactionType> {
+  bool _isFocused = false;
+  @override
+  void initState() {
+    super.initState();
+    // Panggil fetchTransactions di dalam initState
+    final jenisTransaksiProvider =
+        Provider.of<JenisTransaksiProvider>(context, listen: false);
+    jenisTransaksiProvider.fetchTransactions();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<JenisTransaksiProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return Container(
+            padding: const EdgeInsets.all(8.0),
+            width: 280.0,
+            child: const LinearProgressIndicator(
+              backgroundColor: GeneralColor.darkColor,
+              color: GeneralColor.lightColor,
+              minHeight: 1,
+            ),
+          );
+        } else {
+          return Focus(
+            onFocusChange: (hasFocus) {
+              setState(() {
+                _isFocused = hasFocus;
+              });
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.all(8.0),
+              width: _isFocused ? 300.0 : 280.0,
+              child: DropdownButtonFormField<JenisTransaksi>(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Pilih Jenis Transaksi",
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: GeneralColor.darkColor),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide:
+                          BorderSide(color: GeneralColor.darkColor, width: 2),
+                    ),
+                  ),
+                  value: widget.selectedTypeTransaction.value,
+                  onChanged: (JenisTransaksi? newValue) {
+                    widget.selectedTypeTransaction.value = newValue;
+                  },
+                  dropdownColor: GeneralColor.darkColor,
+                  items: provider.jenisTransaksiList
+                      .map<DropdownMenuItem<JenisTransaksi>>(
+                          (JenisTransaksi value) {
+                    return DropdownMenuItem<JenisTransaksi>(
+                      value: value,
+                      child: Text(
+                        value.trxName,
+                        style: const TextStyle(color: GeneralColor.lightColor),
+                      ),
+                    );
+                  }).toList(), // Set the dropdown background color
+                  selectedItemBuilder: (BuildContext context) {
+                    return provider.jenisTransaksiList
+                        .map<Widget>((JenisTransaksi item) {
+                      return Text(
+                        item.trxName,
+                        style: const TextStyle(
+                          color: GeneralColor.darkColor,
+                        ),
+                      );
+                    }).toList();
+                  }),
+            ),
+          );
+        }
+      },
     );
   }
 }

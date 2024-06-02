@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:get_storage/get_storage.dart';
-// import 'package:logger/logger.dart';
+import 'package:logger/logger.dart';
 
 class TeamMember {
   final int id;
@@ -71,9 +71,8 @@ class TeamProvider with ChangeNotifier {
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
-    } catch (error) {
-      // ignore: avoid_print
-      print('Error: $error');
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     }
   }
 
@@ -91,9 +90,8 @@ class TeamProvider with ChangeNotifier {
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
-    } catch (error) {
-      // ignore: avoid_print
-      print('Error: $error');
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     }
   }
 
@@ -108,9 +106,8 @@ class TeamProvider with ChangeNotifier {
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
-    } catch (error) {
-      // ignore: avoid_print
-      print('Error: $error');
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
       return 0;
     }
   }
@@ -128,9 +125,8 @@ class TeamProvider with ChangeNotifier {
       } else {
         throw Exception('Gagal menghapus anggota tim $memberId');
       }
-    } on DioException catch (error) {
-      // ignore: avoid_print
-      print(error);
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     }
   }
 
@@ -160,9 +156,8 @@ class TeamProvider with ChangeNotifier {
       } else {
         throw Exception('Gagal menambahkan anggota tim');
       }
-    } on DioException catch (error) {
-      // ignore: avoid_print
-      print('Error: $error');
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     }
   }
 
@@ -187,9 +182,8 @@ class TeamProvider with ChangeNotifier {
       } else {
         throw Exception('Gagal mengupdate anggota tim');
       }
-    } catch (error) {
-      // ignore: avoid_print
-      print('Error: $error');
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     }
   }
 }

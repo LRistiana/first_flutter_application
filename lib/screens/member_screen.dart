@@ -110,9 +110,10 @@ class _MemberScreenState extends State<MemberScreen> {
                           children: [
                             MemberCard(
                                 getSaldo: () =>
-                                    value.getSaldo(value.member.id)),
+                                    value.getSaldo(value.member.id),
+                                    member: value.member),
                             const SizedBox(width: 16),
-                            const StatisticCard()
+                           StatisticCard(member: value.member,)
                           ],
                         )),
                   ],

@@ -35,11 +35,11 @@ class InputMemberController {
 
 class InputSavingController{
   late TextEditingController nominalController = TextEditingController();
-  JenisTransaksi? selectedJenisTransaksi;
+  late ValueNotifier<JenisTransaksi?> transactionTypeController = ValueNotifier<JenisTransaksi?>(null);
 
 
   TextEditingController get nominal => nominalController;
-  JenisTransaksi get jenisTransaksi => selectedJenisTransaksi!; 
+  ValueNotifier<JenisTransaksi?> get transactionType => transactionTypeController;
 
   void dispose() {
     nominalController.dispose();
@@ -47,7 +47,7 @@ class InputSavingController{
 
   void controllerReset() {
     nominalController.clear();
-    selectedJenisTransaksi = null;
+    transactionTypeController.value = null;
   }
 
   InputSavingController();

@@ -2,6 +2,8 @@ import 'package:first_flutter_application/model/team_members_model.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:logger/logger.dart';
+
 
 class Tabungan {
   late int id;
@@ -56,8 +58,8 @@ class TabunganProvider with ChangeNotifier {
         print(response);
         throw Exception('Gagal mengambil data dari API');
       }
-    } catch (e) {
-      print(e);
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
       throw Exception('Gagal mengambil data dari API');
     }
   }
@@ -74,9 +76,8 @@ class TabunganProvider with ChangeNotifier {
               headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
       if (response.statusCode == 200) {
       }
-    } catch (e) {
-      // ignore: avoid_print
-      print(e);
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     }
   }
 }
@@ -106,8 +107,8 @@ class JenisTransaksiProvider with ChangeNotifier {
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
-    } catch (error) {
-      print('Error: $error');
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     } finally {
       _isLoading = false;
       notifyListeners();

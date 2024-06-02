@@ -1,4 +1,4 @@
-import 'package:first_flutter_application/utils/modal_utils.dart';
+import 'package:first_flutter_application/utils/modal/modal_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter_application/model/team_members_model.dart'; 
 
@@ -46,12 +46,12 @@ class CustomizeModal extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () {
-                    ModalUtils.showDeleteModal(member, context);
+                    ShowModal.showDeleteModal(member, context);
                   },
                   icon: const Icon(Icons.delete, color: Colors.black),
                 ),
                 ElevatedButton(
-                  onPressed: () {ModalUtils.showEditMemberModal(context,member);},
+                  onPressed: () {ShowModal.showEditMemberModal(context,member);},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
