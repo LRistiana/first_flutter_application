@@ -12,6 +12,7 @@ class TeamMember {
   final String telepon;
   final String imageUrl;
   final int statusAktif;
+  int _saldo = 0;
 
   TeamMember({
     required this.id,
@@ -23,6 +24,9 @@ class TeamMember {
     required this.imageUrl,
     required this.statusAktif,
   });
+
+  get saldo => _saldo;
+  set setSaldo(int value) => _saldo = value;
 
   factory TeamMember.fromJson(Map<String, dynamic> json) {
     return TeamMember(

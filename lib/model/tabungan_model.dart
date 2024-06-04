@@ -36,8 +36,12 @@ class Tabungan {
 class TabunganProvider with ChangeNotifier {
   bool _isLoading = false;
   List<Tabungan> _tabungans = [];
+
   final myStorage = GetStorage();
-  static const String _apiUrl = "https://mobileapis.manpits.xyz/api/tabungan";
+
+  static const String _apiUrl = "https://mobileapis.manpits.xyz/api/tabungan"; 
+  static const String _apiUrlSaldo = "https://mobileapis.manpits.xyz/api/saldo";
+
   List<Tabungan> get tabungans => _tabungans;
 
   bool get isLoading => _isLoading;
@@ -61,6 +65,23 @@ class TabunganProvider with ChangeNotifier {
     } on DioException catch (e) {
       Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
       throw Exception('Gagal mengambil data dari API');
+    }
+  }
+
+    Future<int> getSaldo(int anggotaID) async {
+    try {
+      Response response = await Dio().get('$_apiUrlSaldo/$anggotaID',
+          options: Options(
+              headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
+      if (response.statusCode == 200) {
+        final int saldo = response.data['data']['saldo'];
+        return saldo;
+      } else {
+        throw Exception('Gagal mengambil data dari API');
+      }
+    } on DioException catch (e) {
+      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      return 0;
     }
   }
 

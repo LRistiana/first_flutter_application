@@ -16,7 +16,7 @@ class MemberCard extends StatelessWidget {
       height: 200,
       width: 350,
       decoration: BoxDecoration(
-        color: GeneralColor.primaryColor,
+        gradient: GradientColor.primaryGradient,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(

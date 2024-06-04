@@ -1,3 +1,4 @@
+import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:first_flutter_application/widgets/utils/input.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter_application/utils/input_controller_util.dart';
@@ -25,7 +26,8 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(36),
-          color: const Color.fromRGBO(215, 252, 112, 1),
+          gradient: GradientColor.primaryGradient,
+          // color: const Color.fromRGBO(215, 252, 112, 1),
         ),
         height: 550,
         width: 350,

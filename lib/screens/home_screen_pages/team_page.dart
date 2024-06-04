@@ -1,5 +1,6 @@
 import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/modal/modal_utils.dart';
+import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:first_flutter_application/model/team_members_model.dart';
@@ -191,15 +192,22 @@ class AddMemberButton extends StatelessWidget {
     return Container(
       alignment: Alignment.bottomRight,
       padding: const EdgeInsets.only(bottom: 20, right: 20),
-      child: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(215, 252, 112, 1),
-        child: const Icon(
-          Icons.add,
-          color: Colors.black,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: GradientColor.primaryGradient,
+          borderRadius: BorderRadius.circular(50),
         ),
-        onPressed: () {
-          ShowModal.showAddMemberModal(context);
-        },
+        child: FloatingActionButton(
+          backgroundColor:  Colors.transparent,
+          elevation: 0,
+          child: const Icon(
+            Icons.add,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            ShowModal.showAddMemberModal(context);
+          },
+        ),
       ),
     );
   }

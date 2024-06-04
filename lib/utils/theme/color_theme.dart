@@ -10,6 +10,15 @@ class BackgroundColor{
   static const Color secondaryBackgroundColor = Colors.black;
 }
 
+class GradientColor{
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [Color.fromRGBO(237, 209, 199, 1),Color.fromRGBO(176, 193, 216, 1)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+}
+
+
 class TextColor{
   static const Color lightTextColor = Colors.white;
   static const Color darkTextColor = Colors.black;
