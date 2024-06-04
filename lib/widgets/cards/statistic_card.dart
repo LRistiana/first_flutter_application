@@ -21,13 +21,7 @@ class _StatisticCardState extends State<StatisticCard> {
         gradient: GradientColor.primaryGradient,
         // color: GeneralColor.primaryColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
+        
       ),
       child: Column(
         children: [

@@ -18,13 +18,6 @@ class MemberCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: GradientColor.primaryGradient,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
       ),
       child: Column(
         children: [

@@ -6,27 +6,17 @@ import "package:first_flutter_application/widgets/panel/transactions_history.dar
 import 'package:provider/provider.dart';
 import "package:flutter/material.dart";
 
-class MemberScreen extends StatefulWidget {
-  const MemberScreen({super.key, required this.memberID});
+class MemberScreen extends StatelessWidget {
+  MemberScreen({super.key, required this.memberID});
   final int memberID;
 
-  @override
-  State<MemberScreen> createState() => _MemberScreenState();
-}
-
-class _MemberScreenState extends State<MemberScreen> {
   final ScrollController _scrollController = ScrollController();
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-  //   teamProvider.fetchMember(widget.memberID);
-  // }
 
+  // @override
   @override
   Widget build(BuildContext context) {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    teamProvider.fetchMember(widget.memberID);
+    teamProvider.fetchMember(memberID);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -35,7 +25,7 @@ class _MemberScreenState extends State<MemberScreen> {
       backgroundColor: BackgroundColor.primaryBackgroundColor,
       body: Consumer<TeamProvider>(
         builder: (context, value, child) {
-          return Stack(
+          return Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -119,6 +109,12 @@ class _MemberScreenState extends State<MemberScreen> {
                   ],
                 ),
               ),
+              const Text("Trasactions History",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4,),
               TransactionsHistory(memberID: value.member.id,),
             ],
           );
