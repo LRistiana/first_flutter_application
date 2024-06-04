@@ -16,6 +16,11 @@ class GradientColor{
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+  static const LinearGradient primaryGradientRevert = LinearGradient(
+    colors: [Color.fromRGBO(237, 209, 199, 1),Color.fromRGBO(176, 193, 216, 1)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }
 
 
