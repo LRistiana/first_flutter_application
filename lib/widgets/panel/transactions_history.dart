@@ -1,7 +1,9 @@
 import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/utils/format/currency.dart';
+import 'package:first_flutter_application/utils/format/month.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class TransactionsHistory extends StatefulWidget {
@@ -28,15 +30,18 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
 
   @override
   Widget build(BuildContext context) {
-    final tabunganProvider = Provider.of<TabunganProvider>(context, listen: false);
-    final jenisTransaksiProvider = Provider.of<JenisTransaksiProvider>(context, listen: false);
+    final tabunganProvider =
+        Provider.of<TabunganProvider>(context, listen: false);
+    final jenisTransaksiProvider =
+        Provider.of<JenisTransaksiProvider>(context, listen: false);
 
     tabunganProvider.fetchTabungans(widget.memberID);
     jenisTransaksiProvider.fetchTransactions();
 
     return Consumer2<TabunganProvider, JenisTransaksiProvider>(
       builder: (context, tabunganProvider, jenisTransaksiProvider, child) {
-        tabunganProvider.tabungans.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+        tabunganProvider.tabungans
+            .sort((a, b) => b.tanggal.compareTo(a.tanggal));
         var groupedTransactions = groupByMonth(tabunganProvider.tabungans);
 
         if (tabunganProvider.isLoading || jenisTransaksiProvider.isLoading) {
@@ -55,10 +60,12 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
             itemCount: groupedTransactions.length,
             itemBuilder: (BuildContext context, int index) {
               String monthYear = groupedTransactions.keys.elementAt(index);
-              List<Tabungan> monthlyTransactions = groupedTransactions[monthYear]!;
-    
+              List<Tabungan> monthlyTransactions =
+                  groupedTransactions[monthYear]!;
+
               return Container(
-                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: GeneralColor.darkColor,
@@ -67,44 +74,75 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      monthYear,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: GeneralColor.lightColor,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        MonthFormatter.formatMonthYear(monthYear),
+                        style: const TextStyle(
+                          color: GeneralColor.lightColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
                     Column(
                       children: monthlyTransactions.map((tabungan) {
-                        final jenisTransaksi = jenisTransaksiProvider.jenisTransaksiList.firstWhere(
+                        final jenisTransaksi = jenisTransaksiProvider
+                            .jenisTransaksiList
+                            .firstWhere(
                           (jenis) => jenis.id == tabungan.transaksiID,
-                          orElse: () => JenisTransaksi(id: 0, trxName: 'Unknown', trxMultiply: 0),
+                          orElse: () => JenisTransaksi(
+                              id: 0, trxName: 'Unknown', trxMultiply: 0),
                         );
-    
                         return ListTile(
                           leading: Container(
+                            padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: BackgroundColor.iconBacgroundColor,
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: jenisTransaksi.trxMultiply > 0
-                                ? const Icon(Icons.arrow_upward, color: Colors.green)
-                                : const Icon(Icons.arrow_downward, color: Colors.red),
+                                ? const Icon(Icons.arrow_upward,
+                                    color: Colors.green, size: 12)
+                                : const Icon(Icons.arrow_downward,
+                                    color: Colors.red, size: 12),
                           ),
                           title: Text(
                             jenisTransaksi.trxName,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(
+                                color: GeneralColor.lightColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
                           ),
                           subtitle: Text(
-                            tabungan.tanggal.split(' ')[0],
-                            style: const TextStyle(color: Colors.white),
+                            "${MonthFormatter.formatDateMonthYear(tabungan.tanggal.split(' ')[0])} • ${tabungan.tanggal.split(' ')[1].split(':')[0]}:${tabungan.tanggal.split(' ')[1].split(':')[1]}",
+                            style: const TextStyle(
+                                color: GeneralColor.secondaryColor),
                           ),
-                          trailing: Text(
-                            CurrencyFormatter.rupiah(tabungan.nominal),
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                          trailing: jenisTransaksi.trxMultiply > 0
+                              ? Text(
+                                  CurrencyFormatter.rupiah(tabungan.nominal),
+                                  style: const TextStyle(
+                                      color: GeneralColor.lightColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Text(
+                                  "- ${CurrencyFormatter.rupiah(tabungan.nominal)}",
+                                  style: const TextStyle(
+                                      color: GeneralColor.lightColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                ),
                         );
                       }).toList(),
                     ),

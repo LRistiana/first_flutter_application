@@ -4,10 +4,12 @@ class GeneralColor{
   static const Color primaryColor = Color.fromRGBO(215, 252, 112, 1);
   static const Color darkColor = Colors.black;
   static const Color lightColor = Colors.white;
+  static const Color secondaryColor = Color.fromRGBO(146, 146,146, 1);
 }
 class BackgroundColor{
   static const Color primaryBackgroundColor = Color.fromRGBO(17, 17, 17, 1);
   static const Color secondaryBackgroundColor = Colors.black;
+  static const Color iconBacgroundColor = Color.fromRGBO(33, 33,33, 1);
 }
 
 class GradientColor{

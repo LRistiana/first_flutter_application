@@ -1,4 +1,5 @@
 import 'package:first_flutter_application/model/tabungan_model.dart';
+import 'package:first_flutter_application/utils/format/month.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -110,7 +111,7 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
           child: Text(
             widget.dateNotifer.value == null
                 ? 'Select date'
-                : widget.dateNotifer.value!.toLocal().toString().split(' ')[0],
+                : MonthFormatter.formatDateMonthYear(widget.dateNotifer.value!.toLocal().toString().split(' ')[0]),
             style: const TextStyle(
               color: Colors.black,
             ),
