@@ -119,7 +119,7 @@ class _MemberScreenState extends State<MemberScreen> {
                   ],
                 ),
               ),
-              const TransactionsHistory(),
+              TransactionsHistory(memberID: value.member.id,),
             ],
           );
         },
