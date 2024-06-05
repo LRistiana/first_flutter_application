@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:first_flutter_application/screens/sign_in_screen.dart';
+import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:email_validator/email_validator.dart';
@@ -230,7 +231,7 @@ class _SignUpState extends State<SignUp> {
                   height: 84,
                 ),
                 SvgPicture.asset(
-                  'lib/images/started.svg',
+                  'lib/images/newstart.svg',
                   semanticsLabel: 'Hero Image',
                   height: 200,
                   width: 200,
@@ -412,7 +413,7 @@ class _SignUpState extends State<SignUp> {
                     },
                     child: Container(
                         decoration: const BoxDecoration(
-                          color: Color.fromRGBO(215, 252, 112, 1),
+                          gradient: GradientColor.primaryGradientRevert,
                           borderRadius: BorderRadius.all(Radius.circular(16)),
                         ),
                         padding: const EdgeInsets.symmetric(
