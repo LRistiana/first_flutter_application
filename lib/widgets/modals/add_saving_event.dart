@@ -1,3 +1,4 @@
+import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:first_flutter_application/widgets/utils/input.dart';
 import 'package:flutter/material.dart';
@@ -5,9 +6,13 @@ import 'package:first_flutter_application/utils/input_controller_util.dart';
 
 class AddSavingEventModal extends StatefulWidget {
   const AddSavingEventModal(
-      {super.key, required this.inputSavingController, required this.onAdd});
+      {super.key,
+      required this.inputSavingController,
+      required this.onAdd,
+      required this.jenisTransaksiProvider});
   final InputSavingController inputSavingController;
-  final VoidCallback onAdd;
+  final JenisTransaksiProvider jenisTransaksiProvider;
+final VoidCallback onAdd;
 
   @override
   State<AddSavingEventModal> createState() => _AddSavingEventModalState();
@@ -44,8 +49,13 @@ class _AddSavingEventModalState extends State<AddSavingEventModal> {
               const SizedBox(
                 height: 20,
               ),
-              TransactionType(selectedTypeTransaction: widget.inputSavingController.transactionType),
-              TextInput(hintText :"Nominal", controller: widget.inputSavingController.nominal),
+              TransactionType(
+                  selectedTypeTransaction:
+                      widget.inputSavingController.transactionType,
+                  jenisTransaksiProvider: widget.jenisTransaksiProvider),
+              TextInput(
+                  hintText: "Nominal",
+                  controller: widget.inputSavingController.nominal),
               const SizedBox(
                 height: 20,
               ),
@@ -63,7 +73,9 @@ class _AddSavingEventModalState extends State<AddSavingEventModal> {
                   ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        widget.onAdd();
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          widget.onAdd();
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,

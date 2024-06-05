@@ -3,12 +3,15 @@ import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/format/month.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
+// import 'package:flutter/widgets.dart';
+
+// import 'package:provider/provider.dart';
 
 class TransactionsHistory extends StatefulWidget {
-  const TransactionsHistory({super.key, required this.memberID});
-  final int memberID;
+  const TransactionsHistory({super.key, required this.tabunganProvider, required this.jenisTransaksiProvider});
+  // final int memberID;
+  final TabunganProvider tabunganProvider;
+  final JenisTransaksiProvider jenisTransaksiProvider;
 
   @override
   State<TransactionsHistory> createState() => _TransactionsHistoryState();
@@ -30,21 +33,14 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
 
   @override
   Widget build(BuildContext context) {
-    final tabunganProvider =
-        Provider.of<TabunganProvider>(context, listen: false);
-    final jenisTransaksiProvider =
-        Provider.of<JenisTransaksiProvider>(context, listen: false);
 
-    tabunganProvider.fetchTabungans(widget.memberID);
-    jenisTransaksiProvider.fetchTransactions();
-
-    return Consumer2<TabunganProvider, JenisTransaksiProvider>(
-      builder: (context, tabunganProvider, jenisTransaksiProvider, child) {
-        tabunganProvider.tabungans
+    // return Consumer2<TabunganProvider, JenisTransaksiProvider>(
+    //   builder: (context, tabunganProvider, jenisTransaksiProvider, child) {
+        widget.tabunganProvider.tabungans
             .sort((a, b) => b.tanggal.compareTo(a.tanggal));
-        var groupedTransactions = groupByMonth(tabunganProvider.tabungans);
+        var groupedTransactions = groupByMonth(widget.tabunganProvider.tabungans);
 
-        if (tabunganProvider.isLoading || jenisTransaksiProvider.isLoading) {
+        if (widget.tabunganProvider.isLoading || widget.jenisTransaksiProvider.isLoading) {
           return const Center(
             child: LinearProgressIndicator(
               backgroundColor: Colors.white,
@@ -96,7 +92,7 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                     ),
                     Column(
                       children: monthlyTransactions.map((tabungan) {
-                        final jenisTransaksi = jenisTransaksiProvider
+                        final jenisTransaksi = widget.jenisTransaksiProvider
                             .jenisTransaksiList
                             .firstWhere(
                           (jenis) => jenis.id == tabungan.transaksiID,
@@ -152,7 +148,7 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
             },
           ),
         );
-      },
-    );
+    //   },
+    // );
   }
 }

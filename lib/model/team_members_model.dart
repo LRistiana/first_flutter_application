@@ -88,6 +88,7 @@ class TeamProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final dynamic anggotas = response.data['data']['anggota'];
         _member = TeamMember.fromJson(anggotas);
+        _member.setSaldo = await getSaldo(memberID);
         notifyListeners();
         // ignore: avoid_print
         print("sucess fetch member");
@@ -106,6 +107,7 @@ class TeamProvider with ChangeNotifier {
               headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
       if (response.statusCode == 200) {
         final int saldo = response.data['data']['saldo'];
+        Logger().i('${response.statusCode}\n${response.data['message']}');
         return saldo;
       } else {
         throw Exception('Gagal mengambil data dari API');

@@ -80,7 +80,7 @@ class ShowModal {
     );
   }
 
-  static void showAddSavingModal(BuildContext context, TeamMember member){
+  static void showAddSavingModal(BuildContext context, TeamMember member, JenisTransaksiProvider jenisTransaksiProvider){
     // final TeamMember member;
 
     inputSavingController.controllerReset();
@@ -88,6 +88,7 @@ class ShowModal {
       context: context,
       builder: (context) => AddSavingEventModal(
         inputSavingController: inputSavingController,
+        jenisTransaksiProvider: jenisTransaksiProvider,
         onAdd: (){
           final Tabungan newTabungan = Tabungan(transaksiID: inputSavingController.transactionType.value!.id,nominal: int.parse(inputSavingController.nominal.text));
           final savingProvider = Provider.of<TabunganProvider>(context, listen: false);

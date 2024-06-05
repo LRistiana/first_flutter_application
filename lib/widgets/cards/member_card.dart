@@ -1,13 +1,22 @@
+import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/model/team_members_model.dart';
 import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/modal/modal_utils.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 
-class MemberCard extends StatelessWidget {
-  const MemberCard({super.key, required this.getSaldo, required this.member});
+class MemberCard extends StatefulWidget {
+  const MemberCard({super.key, required this.getSaldo, required this.member, required this.jenisTransaksiProvider});
   final Future<int> Function() getSaldo;
+  final JenisTransaksiProvider jenisTransaksiProvider;
   final TeamMember member;
+
+  @override
+  State<MemberCard> createState() => _MemberCardState();
+}
+
+class _MemberCardState extends State<MemberCard> {
+  late int _previousBalance = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -29,17 +38,27 @@ class MemberCard extends StatelessWidget {
                 fontWeight: FontWeight.bold),
           ),
           FutureBuilder<int>(
-            future: getSaldo(),
+            future: widget.getSaldo(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Text(
-                  "Rp -",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
+                return _previousBalance == 0
+                    ? const Text(
+                        "Rp 0",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    :  Text(
+                        CurrencyFormatter.rupiah(_previousBalance),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                
               } else if (snapshot.hasError) {
                 return Text(
                   "Error: ${snapshot.error}",
@@ -49,10 +68,12 @@ class MemberCard extends StatelessWidget {
                   ),
                 );
               } else {
+                int previousBalanceHere = _previousBalance;
+                _previousBalance = snapshot.data!;
                 return AnimatedBalance(
-                  startValue: 0, // Ganti dengan nilai saldo sebelumnya jika ada
+                  startValue: previousBalanceHere, // ganti dengan saldo sebellumnya jika ada
                   endValue: snapshot.data!,
-                  duration: const Duration(seconds: 1), // Durasi animasi
+                  duration: const Duration(seconds: 1), 
                 );
               }
             },
@@ -60,13 +81,13 @@ class MemberCard extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              ShowModal.showAddSavingModal(context, member);
+              ShowModal.showAddSavingModal(context, widget.member, widget.jenisTransaksiProvider);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
               minimumSize:
-                  const Size(300, 60), // Width unconstrained, height 40
+                  const Size(300, 60), 
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
@@ -78,7 +99,7 @@ class MemberCard extends StatelessWidget {
                   Icons.wallet,
                   color: Colors.white,
                 ),
-                SizedBox(width: 8), // Space between icon and text
+                SizedBox(width: 8), 
                 Text(
                   'New Transaction',
                   style: TextStyle(
@@ -99,11 +120,11 @@ class AnimatedBalance extends StatelessWidget {
   final Duration duration;
 
   const AnimatedBalance({
-    Key? key,
+    super.key,
     required this.startValue,
     required this.endValue,
     required this.duration,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

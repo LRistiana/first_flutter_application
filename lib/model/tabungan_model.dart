@@ -35,6 +35,9 @@ class Tabungan {
 
 class TabunganProvider with ChangeNotifier {
   bool _isLoading = false;
+  // ignore: unused_field
+  bool _isChaced = false;
+
   List<Tabungan> _tabungans = [];
 
   final myStorage = GetStorage();
@@ -46,6 +49,8 @@ class TabunganProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
   Future<void> fetchTabungans(int member) async {
+    // if (_isChaced) return;
+
     _isLoading = true;
     try {
       Response response = await Dio().get('$_apiUrl/${member.toString()}',
@@ -56,10 +61,12 @@ class TabunganProvider with ChangeNotifier {
         _tabungans =
             tabungans.map((tabungan) => Tabungan.fromJson(tabungan)).toList();
             _isLoading = false;
+            _isChaced = true;
+        Logger().i('${response.statusCode}\n${response.data['message']}');
         notifyListeners();
       } else {
         _isLoading = false;
-        print(response);
+        Logger().e('${response.statusCode}\n${response.data['message']}');
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
@@ -75,8 +82,10 @@ class TabunganProvider with ChangeNotifier {
               headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
       if (response.statusCode == 200) {
         final int saldo = response.data['data']['saldo'];
+        Logger().i('${response.statusCode}\n${response.data['message']}');
         return saldo;
       } else {
+        Logger().e('${response.statusCode}\n${response.data['message']}');
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
@@ -96,10 +105,21 @@ class TabunganProvider with ChangeNotifier {
           options: Options(
               headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
       if (response.statusCode == 200) {
+        _tabungans.add(Tabungan.fromJson(response.data['data']['tabungan']));
+        Logger().i('${response.statusCode}\n${response.data['message']}');
+        notifyListeners();
+      } else {
+        throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
       Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
     }
+  }
+
+  void clearCache() {
+    _isChaced = false;
+    _tabungans = [];
+    notifyListeners();
   }
 }
 
@@ -108,11 +128,14 @@ class JenisTransaksiProvider with ChangeNotifier {
   static const String _apiUrl = "https://mobileapis.manpits.xyz/api/jenistransaksi";
   List<JenisTransaksi> _jenisTransaksiList = [];
   bool _isLoading = false;
+  // ignore: unused_field
+  bool _isChaced = false;
 
   List<JenisTransaksi> get jenisTransaksiList => _jenisTransaksiList;
   bool get isLoading => _isLoading;
 
   Future<void> fetchTransactions() async {
+    // if (_isChaced) return;
     _isLoading = true;
     notifyListeners();
 
@@ -124,8 +147,11 @@ class JenisTransaksiProvider with ChangeNotifier {
         final List<dynamic> jenistransaksi = response.data['data']['jenistransaksi'];
         _jenisTransaksiList =
             jenistransaksi.map((member) => JenisTransaksi.fromJson(member)).toList();
+        Logger().i('${response.statusCode}\n${response.data['message']}');
+        _isChaced = true;        
         notifyListeners();
       } else {
+        Logger().e('${response.statusCode}\n${response.data['message']}');
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
@@ -134,6 +160,11 @@ class JenisTransaksiProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+  void clearCache() {
+    _isChaced = false;
+    _jenisTransaksiList = [];
+    notifyListeners();
   }
 }
 

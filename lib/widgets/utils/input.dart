@@ -123,8 +123,9 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
 }
 
 class TransactionType extends StatefulWidget {
-  const TransactionType({super.key, required this.selectedTypeTransaction});
+  const TransactionType({super.key, required this.selectedTypeTransaction, required this.jenisTransaksiProvider});
   final ValueNotifier<JenisTransaksi?> selectedTypeTransaction;
+  final JenisTransaksiProvider jenisTransaksiProvider;
 
   @override
   State<TransactionType> createState() => _TransactionTypeState();
@@ -133,19 +134,19 @@ class TransactionType extends StatefulWidget {
 class _TransactionTypeState extends State<TransactionType> {
   bool _isFocused = false;
   @override
-  void initState() {
-    super.initState();
-    // Panggil fetchTransactions di dalam initState
-    final jenisTransaksiProvider =
-        Provider.of<JenisTransaksiProvider>(context, listen: false);
-    jenisTransaksiProvider.fetchTransactions();
-  }
+  // void initState() {
+  //   super.initState();
+  //   // Panggil fetchTransactions di dalam initState
+  //   final jenisTransaksiProvider =
+  //       Provider.of<JenisTransaksiProvider>(context, listen: false);
+  //   jenisTransaksiProvider.fetchTransactions();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<JenisTransaksiProvider>(
-      builder: (context, provider, child) {
-        if (provider.isLoading) {
+      builder: (context, tes, child) {
+        if (widget.jenisTransaksiProvider.isLoading) {
           return Container(
             padding: const EdgeInsets.all(8.0),
             width: 280.0,
@@ -183,7 +184,7 @@ class _TransactionTypeState extends State<TransactionType> {
                     widget.selectedTypeTransaction.value = newValue;
                   },
                   dropdownColor: GeneralColor.darkColor,
-                  items: provider.jenisTransaksiList
+                  items: widget.jenisTransaksiProvider.jenisTransaksiList
                       .map<DropdownMenuItem<JenisTransaksi>>(
                           (JenisTransaksi value) {
                     return DropdownMenuItem<JenisTransaksi>(
@@ -195,7 +196,7 @@ class _TransactionTypeState extends State<TransactionType> {
                     );
                   }).toList(), // Set the dropdown background color
                   selectedItemBuilder: (BuildContext context) {
-                    return provider.jenisTransaksiList
+                    return widget.jenisTransaksiProvider.jenisTransaksiList
                         .map<Widget>((JenisTransaksi item) {
                       return Text(
                         item.trxName,
@@ -208,7 +209,7 @@ class _TransactionTypeState extends State<TransactionType> {
             ),
           );
         }
-      },
-    );
+      }, // comment ini
+    );// comment ini
   }
 }
