@@ -55,7 +55,7 @@ class ProfileCard extends StatelessWidget {
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Total Balance", style:  TextStyle(
+              Text("Total Member Balance", style:  TextStyle(
                   color: GeneralColor.darkColor,
                   fontSize: 12,
                   fontWeight: FontWeight.bold)),

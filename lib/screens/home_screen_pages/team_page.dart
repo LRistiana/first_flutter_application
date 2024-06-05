@@ -200,7 +200,10 @@ class AddMemberButton extends StatelessWidget {
         ),
         child: FloatingActionButton(
           backgroundColor:  Colors.transparent,
+          foregroundColor:  Colors.transparent,
+          shape: const CircleBorder(),
           elevation: 0,
+
           child: const Icon(
             Icons.add,
             color: Colors.black,
