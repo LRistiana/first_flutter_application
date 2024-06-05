@@ -1,4 +1,5 @@
 import 'package:first_flutter_application/model/team_members_model.dart';
+import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:first_flutter_application/widgets/utils/input.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter_application/utils/input_controller_util.dart';
@@ -30,7 +31,7 @@ class _EditMemberEventModalState extends State<EditMemberEventModal> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(36),
-          color: const Color.fromRGBO(215, 252, 112, 1),
+          gradient: GradientColor.primaryGradientRevert,
         ),
         height: 550,
         width: 350,

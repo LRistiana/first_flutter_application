@@ -1,4 +1,5 @@
 import 'package:first_flutter_application/utils/modal/modal_utils.dart';
+import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter_application/model/team_members_model.dart'; 
 
@@ -17,7 +18,7 @@ class CustomizeModal extends StatelessWidget {
       child: Container(
         height: 200,
         padding: const EdgeInsets.all(20),
-        color: const Color.fromRGBO(215, 252, 112, 1),
+        decoration: const BoxDecoration(gradient: GradientColor.primaryGradientRevert),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
