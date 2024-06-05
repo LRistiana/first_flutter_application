@@ -213,3 +213,55 @@ class _TransactionTypeState extends State<TransactionType> {
     );// comment ini
   }
 }
+
+
+class SearchInput extends StatelessWidget {
+  const SearchInput({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color:
+            BackgroundColor.iconBacgroundColor, // Mengatur warna latar belakang
+        borderRadius: BorderRadius.circular(50), // Membuat sudut bulat
+      ),
+      padding: const EdgeInsets.symmetric(
+          horizontal: 24), // Menambahkan padding horizontal
+      child: const TextField(
+        decoration: InputDecoration(
+          hintStyle: TextStyle(
+              color: GeneralColor.darkColor), // Mengatur warna teks hint
+          hintText: 'Search...', // Menampilkan teks hint
+          border: InputBorder.none, // Menghapus border
+          icon: Icon(Icons.search), // Menampilkan ikon search di sisi kiri
+        ),
+      ),
+    );
+  }
+}
+
+class GradientText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+
+  const GradientText(
+    this.text, {
+    super.key,
+    required this.style,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return GradientColor.primaryGradientRevert.createShader(bounds);
+      },
+      child: Text(
+        text,
+        style: style.copyWith(
+            color: Colors.white), // Optional: You can adjust the text color
+      ),
+    );
+  }
+}

@@ -1,7 +1,10 @@
+import 'package:first_flutter_application/screens/home_screen_pages/dashboard_page.dart';
 import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/modal/modal_utils.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
+import 'package:first_flutter_application/widgets/panel/team_members_panel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:first_flutter_application/model/team_members_model.dart';
 
@@ -28,84 +31,103 @@ class _TeamPageState extends State<TeamPage> {
 
     return Consumer<TeamProvider>(
       builder: (context, teamProvider, child) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Stack(
-            children: [
-              teamProvider.teamMembers.isEmpty
-                  ? const Center(
-                      child: Text("Belum ada anggota tim",
-                          style:
-                              TextStyle(fontSize: 20, color: Colors.white38)),
-                    )
-                  : ListView.builder(
-                      itemCount: teamProvider.teamMembers.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: ListTile(
-                              leading:
-                                  const Icon(Icons.person, color: Colors.black),
-                              title: Text(
-                                teamProvider.teamMembers[index].nama,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              subtitle: FutureBuilder<int>(
-                                future: teamProvider.getSaldo(
-                                    teamProvider.teamMembers[index].id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const Text('Saldo : Rp. -');
-                                  } else if (snapshot.hasError) {
-                                    return const Text('Error');
-                                  } else {
-                                    return Text('Saldo : ${CurrencyFormatter.rupiah(snapshot.data!)}');
-                                  }
-                                },
-                              ),
-                              onTap: () =>
-                                  Navigator.pushNamed(context, '/member',
-                                  arguments: teamProvider.teamMembers[index].id)
-                                  // _showMemberDetail(
-                                  //     teamProvider.teamMembers[index], context),
-                                  // ModalUtils.showCustomizeModal(
-                                  //     teamProvider.teamMembers[index], context),
-                                  ,
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      ShowModal.showCustomizeModal(
-                                          teamProvider.teamMembers[index],
-                                          context);
-                                      // Navigator.pushNamed(context, '/tabungan',
-                                      //     arguments: teamProvider
-                                      //         .teamMembers[index].id);
-                                    },
-                                    icon: const Icon(Icons.more_vert,
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-              const AddMemberButton(),
-            ],
-          ),
+        return Stack(
+          children: [
+            Container(
+              padding: const  EdgeInsets.all(24),
+              child: const Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      GradientText(
+                        "Find your member",
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                   SizedBox(height: 16),
+                  SearchInput(),
+                ],
+              ),
+            ),
+            const Positioned(
+                bottom: 0, left: 0, right: 0, child: MembersPanel()),
+            const AddMemberButton(),
+          ],
         );
       },
     );
   }
+
+  //   teamProvider.teamMembers.isEmpty
+  //       ? const Center(
+  //           child: Text("Belum ada anggota tim",
+  //               style:
+  //                   TextStyle(fontSize: 20, color: Colors.white38)),
+  //         )
+  //       : ListView.builder(
+  //           itemCount: teamProvider.teamMembers.length,
+  //           itemBuilder: (context, index) {
+  //             return Padding(
+  //               padding: const EdgeInsets.all(8.0),
+  //               child: Container(
+  //                 decoration: BoxDecoration(
+  //                   color: Colors.grey,
+  //                   borderRadius: BorderRadius.circular(10.0),
+  //                 ),
+  //                 child: ListTile(
+  //                   leading:
+  //                       const Icon(Icons.person, color: Colors.black),
+  //                   title: Text(
+  //                     teamProvider.teamMembers[index].nama,
+  //                     style: const TextStyle(color: Colors.white),
+  //                   ),
+  //                   subtitle: FutureBuilder<int>(
+  //                     future: teamProvider.getSaldo(
+  //                         teamProvider.teamMembers[index].id),
+  //                     builder: (context, snapshot) {
+  //                       if (snapshot.connectionState ==
+  //                           ConnectionState.waiting) {
+  //                         return const Text('Saldo : Rp. -');
+  //                       } else if (snapshot.hasError) {
+  //                         return const Text('Error');
+  //                       } else {
+  //                         return Text('Saldo : ${CurrencyFormatter.rupiah(snapshot.data!)}');
+  //                       }
+  //                     },
+  //                   ),
+  //                   onTap: () =>
+  //                       Navigator.pushNamed(context, '/member',
+  //                       arguments: teamProvider.teamMembers[index].id)
+  //                       // _showMemberDetail(
+  //                       //     teamProvider.teamMembers[index], context),
+  //                       // ModalUtils.showCustomizeModal(
+  //                       //     teamProvider.teamMembers[index], context),
+  //                       ,
+  //                   trailing: Row(
+  //                     mainAxisSize: MainAxisSize.min,
+  //                     children: [
+  //                       IconButton(
+  //                         onPressed: () {
+  //                           ShowModal.showCustomizeModal(
+  //                               teamProvider.teamMembers[index],
+  //                               context);
+  //                           // Navigator.pushNamed(context, '/tabungan',
+  //                           //     arguments: teamProvider
+  //                           //         .teamMembers[index].id);
+  //                         },
+  //                         icon: const Icon(Icons.more_vert,
+  //                             color: Colors.white),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             );
+  //           },
+  //         ),
 
   // void _showCustomizeModal(TeamMember member, BuildContext context) {
   //   showModalBottomSheet(
@@ -199,11 +221,10 @@ class AddMemberButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(50),
         ),
         child: FloatingActionButton(
-          backgroundColor:  Colors.transparent,
-          foregroundColor:  Colors.transparent,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.transparent,
           shape: const CircleBorder(),
           elevation: 0,
-
           child: const Icon(
             Icons.add,
             color: Colors.black,

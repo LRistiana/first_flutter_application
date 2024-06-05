@@ -27,7 +27,7 @@ class ShowModal {
       builder: (context) {
         return CustomizeModal(member: member);
       },
-    );
+    );  
   }
 
   static void showDeleteModal(TeamMember member, BuildContext context) {
