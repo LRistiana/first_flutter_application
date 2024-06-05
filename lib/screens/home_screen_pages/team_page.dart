@@ -7,6 +7,7 @@ import 'package:first_flutter_application/model/team_members_model.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
+  // final TeamProvider teamProvider;
 
   @override
   State<TeamPage> createState() => _TeamPageState();
@@ -22,8 +23,8 @@ class _TeamPageState extends State<TeamPage> {
 
   @override
   Widget build(BuildContext context) {
-    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    teamProvider.fetchTeamMembers();
+    // final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    // teamProvider.fetchTeamMembers();
 
     return Consumer<TeamProvider>(
       builder: (context, teamProvider, child) {

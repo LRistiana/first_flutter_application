@@ -1,3 +1,4 @@
+import "package:first_flutter_application/utils/theme/color_theme.dart";
 import "package:flutter/material.dart";
 import "package:google_nav_bar/google_nav_bar.dart";
 
@@ -11,15 +12,15 @@ class BottomNavBar extends StatelessWidget {
       child: GNav(
         color: Colors.grey,
         activeColor: Colors.black,
-        backgroundColor: Colors.black,
+        backgroundColor: BackgroundColor.secondaryBackgroundColor,
         mainAxisAlignment: MainAxisAlignment.center,
-        tabBackgroundColor: const Color.fromRGBO(215, 252, 112, 1),
-        tabBorderRadius: 16,
+        tabBackgroundColor: GradientColor.primaryGradientRevert.colors[1],
+        tabBorderRadius: 36,
         onTabChange :(value) => onTabchange!(value),
-
-
+        gap: 1,
         tabs:  const [
-          GButton(icon: Icons.people, text: 'Anggota'),
+        GButton(icon: Icons.home, text: 'Home'),
+          GButton(icon: Icons.people, text: 'Members'),
           GButton(icon: Icons.person_2, text: 'Profile')
         ],
       ),
