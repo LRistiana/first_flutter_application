@@ -43,7 +43,9 @@ class _MemberScreenState extends State<MemberScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        elevation: 0,
         iconTheme: const IconThemeData(color: GeneralColor.lightColor),
+        surfaceTintColor: Colors.transparent
       ),
       backgroundColor: BackgroundColor.primaryBackgroundColor,
       body: Consumer3<TeamProvider, TabunganProvider, JenisTransaksiProvider>(

@@ -2,6 +2,7 @@ import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/format/month.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
+import 'package:first_flutter_application/widgets/utils/null_notification.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
 
@@ -48,6 +49,11 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
               minHeight: 1,
             ),
           );
+        }
+
+        if (widget.tabunganProvider.tabungans.isEmpty) {
+          return const NullNotifier(hintText: "No transactions found");
+          
         }
 
         return SizedBox(
