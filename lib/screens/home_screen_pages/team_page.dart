@@ -1,4 +1,5 @@
 import 'package:first_flutter_application/screens/home_screen_pages/dashboard_page.dart';
+import 'package:first_flutter_application/utils/bug_tester.dart';
 import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/modal/modal_utils.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
@@ -26,6 +27,7 @@ class _TeamPageState extends State<TeamPage> {
 
   @override
   Widget build(BuildContext context) {
+    BugTester.test(context.toString());
     // final teamProvider = Provider.of<TeamProvider>(context, listen: false);
     // teamProvider.fetchTeamMembers();
 

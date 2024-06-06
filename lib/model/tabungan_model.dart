@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 
-
 class Tabungan {
   late int id;
   final int transaksiID;
@@ -42,7 +41,7 @@ class TabunganProvider with ChangeNotifier {
 
   final myStorage = GetStorage();
 
-  static const String _apiUrl = "https://mobileapis.manpits.xyz/api/tabungan"; 
+  static const String _apiUrl = "https://mobileapis.manpits.xyz/api/tabungan";
   static const String _apiUrlSaldo = "https://mobileapis.manpits.xyz/api/saldo";
 
   List<Tabungan> get tabungans => _tabungans;
@@ -60,8 +59,8 @@ class TabunganProvider with ChangeNotifier {
         final List<dynamic> tabungans = response.data['data']['tabungan'];
         _tabungans =
             tabungans.map((tabungan) => Tabungan.fromJson(tabungan)).toList();
-            _isLoading = false;
-            _isChaced = true;
+        _isLoading = false;
+        _isChaced = true;
         Logger().i('${response.statusCode}\n${response.data['message']}');
         notifyListeners();
       } else {
@@ -79,7 +78,7 @@ class TabunganProvider with ChangeNotifier {
     }
   }
 
-    Future<int> getSaldo(int anggotaID) async {
+  Future<int> getSaldo(int anggotaID) async {
     try {
       Response response = await Dio().get('$_apiUrlSaldo/$anggotaID',
           options: Options(
@@ -117,7 +116,7 @@ class TabunganProvider with ChangeNotifier {
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
-      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      Logger().e(e.response?.data['message'], error: "${e.response?.statusMessage} ${e.response?.statusCode}");
       return "${e.response?.data['message']}";
     }
   }
@@ -131,7 +130,8 @@ class TabunganProvider with ChangeNotifier {
 
 class JenisTransaksiProvider with ChangeNotifier {
   final myStorage = GetStorage();
-  static const String _apiUrl = "https://mobileapis.manpits.xyz/api/jenistransaksi";
+  static const String _apiUrl =
+      "https://mobileapis.manpits.xyz/api/jenistransaksi";
   List<JenisTransaksi> _jenisTransaksiList = [];
   bool _isLoading = false;
   // ignore: unused_field
@@ -150,23 +150,27 @@ class JenisTransaksiProvider with ChangeNotifier {
           options: Options(
               headers: {"Authorization": "Bearer ${myStorage.read("token")}"}));
       if (response.statusCode == 200) {
-        final List<dynamic> jenistransaksi = response.data['data']['jenistransaksi'];
-        _jenisTransaksiList =
-            jenistransaksi.map((member) => JenisTransaksi.fromJson(member)).toList();
+        final List<dynamic> jenistransaksi =
+            response.data['data']['jenistransaksi'];
+        _jenisTransaksiList = jenistransaksi
+            .map((member) => JenisTransaksi.fromJson(member))
+            .toList();
         Logger().i('${response.statusCode}\n${response.data['message']}');
-        _isChaced = true;        
+        _isChaced = true;
         notifyListeners();
       } else {
         Logger().e('${response.statusCode}\n${response.data['message']}');
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
-      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      Logger().e(e.response?.data['message'],
+          error: "${e.response?.statusMessage} ${e.response?.statusCode}");
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
+
   void clearCache() {
     _isChaced = false;
     _jenisTransaksiList = [];

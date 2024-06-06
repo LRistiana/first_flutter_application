@@ -7,13 +7,10 @@ import 'package:first_flutter_application/widgets/modals/add_saving_event.dart';
 import 'package:first_flutter_application/widgets/modals/delete_event.dart';
 import 'package:first_flutter_application/widgets/modals/delete_result.dart';
 import 'package:first_flutter_application/widgets/modals/edit_member_event.dart';
-import 'package:first_flutter_application/widgets/utils/announcer.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter_application/model/team_members_model.dart';
 import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/widgets/modals/customize_modal.dart';
-import 'package:flutter/widgets.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:first_flutter_application/utils/input_controller_util.dart';
 

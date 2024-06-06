@@ -71,12 +71,14 @@ class TeamProvider with ChangeNotifier {
         final List<dynamic> anggotas = response.data['data']['anggotas'];
         _teamMembers =
             anggotas.map((member) => TeamMember.fromJson(member)).toList();
+        Logger().i('${response.statusCode}\n${response.data['message']}');
         notifyListeners();
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
-      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      Logger().e(e.response?.data['message'],
+          error: "${e.response?.statusMessage} ${e.response?.statusCode}");
     }
   }
 
@@ -88,14 +90,15 @@ class TeamProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final dynamic anggotas = response.data['data']['anggota'];
         _member = TeamMember.fromJson(anggotas);
-        _member.setSaldo = await getSaldo(memberID);
+        // _member.setSaldo = await getSaldo(memberID);
         notifyListeners();
         Logger().i('${response.statusCode}\n${response.data['message']}');
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
-      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      Logger().e(e.response?.data['message'],
+          error: "${e.response?.statusMessage} ${e.response?.statusCode}");
     }
   }
 
@@ -112,7 +115,8 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
-      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      Logger().e(e.response?.data['message'],
+          error: "${e.response?.statusMessage} ${e.response?.statusCode}");
       return 0;
     }
   }
@@ -134,7 +138,8 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal menghapus anggota tim $memberId');
       }
     } on DioException catch (e) {
-      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      Logger().e(e.response?.data['message'],
+          error: "${e.response?.statusMessage} ${e.response?.statusCode}");
       return "${e.response?.data['message']}";
     }
   }
@@ -168,7 +173,8 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal menambahkan anggota tim');
       }
     } on DioException catch (e) {
-      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      Logger().e(e.response?.data['message'],
+          error: "${e.response?.statusMessage} ${e.response?.statusCode}");
       if (e.response?.data['message'].toString().split(" ")[0] ==
           'SQLSTATE[23000]:') {
         return 'Nomor induk sudah digunakan';
@@ -201,7 +207,8 @@ class TeamProvider with ChangeNotifier {
         throw Exception('Gagal mengupdate anggota tim');
       }
     } on DioException catch (e) {
-      Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      Logger().e(e.response?.data['message'],
+          error: "${e.response?.statusMessage} ${e.response?.statusCode}");
       if (e.response?.data['message'].toString().split(" ")[0] ==
           'SQLSTATE[23000]:') {
         return 'Nomor induk sudah digunakan';

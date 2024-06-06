@@ -1,12 +1,17 @@
 import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/model/team_members_model.dart';
+import 'package:first_flutter_application/utils/bug_tester.dart';
 import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/modal/modal_utils.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 
 class MemberCard extends StatefulWidget {
-  const MemberCard({super.key, required this.getSaldo, required this.member, required this.jenisTransaksiProvider});
+  const MemberCard(
+      {super.key,
+      required this.getSaldo,
+      required this.member,
+      required this.jenisTransaksiProvider});
   final Future<int> Function() getSaldo;
   final JenisTransaksiProvider jenisTransaksiProvider;
   final TeamMember member;
@@ -17,6 +22,14 @@ class MemberCard extends StatefulWidget {
 
 class _MemberCardState extends State<MemberCard> {
   late int _previousBalance = 0;
+
+  // late Future<int> _futureSaldo;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _futureSaldo = widget.getSaldo();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +51,7 @@ class _MemberCardState extends State<MemberCard> {
                 fontWeight: FontWeight.bold),
           ),
           FutureBuilder<int>(
+            key: const ValueKey('unique_key_for_future_builder'),
             future: widget.getSaldo(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -50,7 +64,7 @@ class _MemberCardState extends State<MemberCard> {
                           fontWeight: FontWeight.bold,
                         ),
                       )
-                    :  Text(
+                    : Text(
                         CurrencyFormatter.rupiah(_previousBalance),
                         style: const TextStyle(
                           color: Colors.black,
@@ -58,7 +72,6 @@ class _MemberCardState extends State<MemberCard> {
                           fontWeight: FontWeight.bold,
                         ),
                       );
-                
               } else if (snapshot.hasError) {
                 return Text(
                   "Error: ${snapshot.error}",
@@ -71,9 +84,10 @@ class _MemberCardState extends State<MemberCard> {
                 int previousBalanceHere = _previousBalance;
                 _previousBalance = snapshot.data!;
                 return AnimatedBalance(
-                  startValue: previousBalanceHere, // ganti dengan saldo sebellumnya jika ada
+                  startValue:
+                      previousBalanceHere, // ganti dengan saldo sebellumnya jika ada
                   endValue: snapshot.data!,
-                  duration: const Duration(seconds: 1), 
+                  duration: const Duration(seconds: 1),
                 );
               }
             },
@@ -81,13 +95,13 @@ class _MemberCardState extends State<MemberCard> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              ShowModal.showAddSavingModal(context, widget.member, widget.jenisTransaksiProvider);
+              ShowModal.showAddSavingModal(
+                  context, widget.member, widget.jenisTransaksiProvider);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
-              minimumSize:
-                  const Size(300, 60), 
+              minimumSize: const Size(300, 60),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
@@ -99,7 +113,7 @@ class _MemberCardState extends State<MemberCard> {
                   Icons.wallet,
                   color: Colors.white,
                 ),
-                SizedBox(width: 8), 
+                SizedBox(width: 8),
                 Text(
                   'New Transaction',
                   style: TextStyle(

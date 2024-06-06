@@ -1,5 +1,6 @@
 import "package:first_flutter_application/model/tabungan_model.dart";
 import "package:first_flutter_application/model/team_members_model.dart";
+import "package:first_flutter_application/utils/bug_tester.dart";
 import "package:first_flutter_application/utils/theme/color_theme.dart";
 import "package:first_flutter_application/widgets/cards/member_card.dart";
 import "package:first_flutter_application/widgets/cards/statistic_card.dart";
@@ -40,13 +41,13 @@ class _MemberScreenState extends State<MemberScreen> {
   // @override
   @override
   Widget build(BuildContext context) {
+    BugTester.test(context.toString());
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: GeneralColor.lightColor),
-        surfaceTintColor: Colors.transparent
-      ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: GeneralColor.lightColor),
+          surfaceTintColor: Colors.transparent),
       backgroundColor: BackgroundColor.primaryBackgroundColor,
       body: Consumer3<TeamProvider, TabunganProvider, JenisTransaksiProvider>(
         builder:
@@ -125,8 +126,8 @@ class _MemberScreenState extends State<MemberScreen> {
                         child: Row(
                           children: [
                             MemberCard(
-                              getSaldo: () =>
-                                  teamValue.getSaldo(teamValue.member.id),
+                              getSaldo: () => teamValue.getSaldo(
+                                  teamValue.member.id),
                               member: teamValue.member,
                               jenisTransaksiProvider: jenisTransaksiValue,
                             ),
