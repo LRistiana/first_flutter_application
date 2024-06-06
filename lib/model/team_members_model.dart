@@ -60,7 +60,7 @@ class TeamProvider with ChangeNotifier {
   static const String _apiUrlSaldo = "https://mobileapis.manpits.xyz/api/saldo";
 
   List<TeamMember> get teamMembers => _teamMembers;
-  TeamMember get member => _member; 
+  TeamMember get member => _member;
 
   Future<void> fetchTeamMembers() async {
     try {
@@ -90,8 +90,7 @@ class TeamProvider with ChangeNotifier {
         _member = TeamMember.fromJson(anggotas);
         _member.setSaldo = await getSaldo(memberID);
         notifyListeners();
-        // ignore: avoid_print
-        print("sucess fetch member");
+        Logger().i('${response.statusCode}\n${response.data['message']}');
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
@@ -118,7 +117,7 @@ class TeamProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteMember(int memberId) async {
+  Future<String> deleteMember(int memberId) async {
     try {
       Response response = await Dio().delete('$_apiUrl/$memberId',
           options: Options(
@@ -126,17 +125,21 @@ class TeamProvider with ChangeNotifier {
       // headers: {"Authorization": "Bearer hai"}));
 
       if (response.statusCode == 200) {
+        // fetchTeamMembers();
         _teamMembers.removeWhere((member) => member.id == memberId);
         notifyListeners();
+        Logger().i('${response.statusCode}\n${response.data['message']}');
+        return 'success/Berhasil menghapus anggota tim';
       } else {
         throw Exception('Gagal menghapus anggota tim $memberId');
       }
     } on DioException catch (e) {
       Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      return "${e.response?.data['message']}";
     }
   }
 
-  Future<void> addMember(TeamMember member) async {
+  Future<String> addMember(TeamMember member) async {
     try {
       final response =
           await Dio().post("https://mobileapis.manpits.xyz/api/anggota",
@@ -159,15 +162,22 @@ class TeamProvider with ChangeNotifier {
               ));
       if (response.statusCode == 200) {
         fetchTeamMembers();
+        Logger().i('${response.statusCode}\n${response.data['message']}');
+        return 'success/Berhasil menambahkan anggota tim';
       } else {
         throw Exception('Gagal menambahkan anggota tim');
       }
     } on DioException catch (e) {
       Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      if (e.response?.data['message'].toString().split(" ")[0] ==
+          'SQLSTATE[23000]:') {
+        return 'Nomor induk sudah digunakan';
+      }
+      return "${e.response?.data['message']}";
     }
   }
 
-  Future<void> updateMember(TeamMember member) async {
+  Future<String> updateMember(TeamMember member) async {
     try {
       final response = await Dio().put("$_apiUrl/${member.id}",
           data: {
@@ -185,11 +195,18 @@ class TeamProvider with ChangeNotifier {
           ));
       if (response.statusCode == 200) {
         fetchTeamMembers();
+        Logger().i('${response.statusCode}\n${response.data['message']}');
+        return 'success/Berhasil mengupdate anggota tim';
       } else {
         throw Exception('Gagal mengupdate anggota tim');
       }
     } on DioException catch (e) {
       Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      if (e.response?.data['message'].toString().split(" ")[0] ==
+          'SQLSTATE[23000]:') {
+        return 'Nomor induk sudah digunakan';
+      }
+      return "${e.response?.data['message']}";
     }
   }
 }

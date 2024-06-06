@@ -71,6 +71,10 @@ class TabunganProvider with ChangeNotifier {
       }
     } on DioException catch (e) {
       Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      if (e.response?.statusCode == 406) {
+        _tabungans = [];
+        // Navigator.of(context).pushReplacementNamed('/homePage');
+      }
       throw Exception('Gagal mengambil data dari API');
     }
   }
@@ -94,7 +98,7 @@ class TabunganProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addTabungan(TeamMember member, Tabungan tabungan) async {
+  Future<String> addTabungan(TeamMember member, Tabungan tabungan) async {
     try {
       Response response = await Dio().post(_apiUrl,
           data: {
@@ -108,11 +112,13 @@ class TabunganProvider with ChangeNotifier {
         _tabungans.add(Tabungan.fromJson(response.data['data']['tabungan']));
         Logger().i('${response.statusCode}\n${response.data['message']}');
         notifyListeners();
+        return "success/${response.data['message']}";
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
       Logger().e('${e.response?.statusCode}\n${e.response?.data['message']}');
+      return "${e.response?.data['message']}";
     }
   }
 

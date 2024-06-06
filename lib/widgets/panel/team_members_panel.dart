@@ -1,5 +1,5 @@
 import 'package:first_flutter_application/model/team_members_model.dart';
-import 'package:first_flutter_application/utils/format/currency.dart';
+// import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/modal/modal_utils.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:first_flutter_application/widgets/utils/null_notification.dart';
@@ -108,20 +108,22 @@ class MembersPanel extends StatelessWidget {
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: GeneralColor.lightColor)),
-                            subtitle: FutureBuilder<int>(
-                              future: teamProvider.getSaldo(member.id),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Text('Saldo : Rp. 0');
-                                } else if (snapshot.hasError) {
-                                  return const Text('Error');
-                                } else {
-                                  return Text(
-                                      'Saldo : ${CurrencyFormatter.rupiah(snapshot.data!)}');
-                                }
-                              },
-                            ),
+                            subtitle: Text(
+                                member.alamat),
+                            // FutureBuilder<int>(
+                            //   future: teamProvider.getSaldo(member.id),
+                            //   builder: (context, snapshot) {
+                            //     if (snapshot.connectionState ==
+                            //         ConnectionState.waiting) {
+                            //       return const Text('Saldo : Rp. 0');
+                            //     } else if (snapshot.hasError) {
+                            //       return const Text('Error');
+                            //     } else {
+                            //       return Text(
+                            //           'Saldo : ${CurrencyFormatter.rupiah(snapshot.data!)}');
+                            //     }
+                            //   },
+                            // ),
                             trailing: member.statusAktif == 1
                             ? const Icon(
                                 Icons.circle,

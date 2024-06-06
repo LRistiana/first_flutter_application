@@ -1,12 +1,19 @@
+import 'dart:math';
+
+import 'package:dio/dio.dart';
+import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:first_flutter_application/widgets/modals/add_member_event.dart';
 import 'package:first_flutter_application/widgets/modals/add_saving_event.dart';
 import 'package:first_flutter_application/widgets/modals/delete_event.dart';
 import 'package:first_flutter_application/widgets/modals/delete_result.dart';
 import 'package:first_flutter_application/widgets/modals/edit_member_event.dart';
+import 'package:first_flutter_application/widgets/utils/announcer.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter_application/model/team_members_model.dart';
 import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/widgets/modals/customize_modal.dart';
+import 'package:flutter/widgets.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:first_flutter_application/utils/input_controller_util.dart';
 
@@ -27,7 +34,7 @@ class ShowModal {
       builder: (context) {
         return CustomizeModal(member: member);
       },
-    );  
+    );
   }
 
   static void showDeleteModal(TeamMember member, BuildContext context) {
@@ -46,10 +53,47 @@ class ShowModal {
             Navigator.of(context).pop();
             final teamProvider =
                 Provider.of<TeamProvider>(context, listen: false);
-            try {
-              teamProvider.deleteMember(member.id);
-              showDeleteSuccesModal(context);
-            } catch (e) {}
+              // teamProvider.deleteMember(member.id);
+              // showDeleteSuccesModal(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: FutureBuilder(
+                future: teamProvider.deleteMember(member.id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return snapshot.data.toString().split("/")[0] == "success"
+                        ? Row(children: [
+                            const Icon(Icons.check_circle, color: Colors.green),
+                            const SizedBox(width: 10),
+                            Text(snapshot.data.toString().split("/")[1]),
+                          ])
+                        : Row(children: [
+                            const Icon(Icons.error, color: Colors.red),
+                            const SizedBox(width: 10),
+                            Text(snapshot.data.toString()),
+                          ]);
+                  } else {
+                    return  const Row(
+                      children: [
+                        SizedBox(
+                          height: 15,
+                          width: 15,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(GeneralColor.lightColor),
+                            strokeWidth: 1,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text("Loading...")
+                      ],
+                    );
+                  }
+                },
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+
           },
         );
       },
@@ -61,42 +105,120 @@ class ShowModal {
     showDialog(
       context: context,
       builder: (context) => AddMemberEventModal(
-        inputMemberController: inputMemberController,
-        onAdd: (){
-          final newMember = TeamMember(
-            id: int.parse(inputMemberController.nomerInduk.text),
-            nomorInduk: int.parse(inputMemberController.nomerInduk.text),
-            nama: inputMemberController.name.text,
-            alamat: inputMemberController.address.text,
-            telepon: inputMemberController.telp.text,
-            tanggalLahir: inputMemberController.date.value.toString(),
-            imageUrl: "",
-            statusAktif: 1,
+          inputMemberController: inputMemberController,
+          onAdd: () {
+            final newMember = TeamMember(
+              id: int.parse(inputMemberController.nomerInduk.text),
+              nomorInduk: int.parse(inputMemberController.nomerInduk.text),
+              nama: inputMemberController.name.text,
+              alamat: inputMemberController.address.text,
+              telepon: inputMemberController.telp.text,
+              tanggalLahir: inputMemberController.date.value.toString(),
+              imageUrl: "",
+              statusAktif: 1,
+            );
+            final teamProvider =
+                Provider.of<TeamProvider>(context, listen: false);
+            // teamProvider.addMember(newMember);
+            ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: FutureBuilder(
+                future: teamProvider.addMember(newMember),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return snapshot.data.toString().split("/")[0] == "success"
+                        ? Row(children: [
+                            const Icon(Icons.check_circle, color: Colors.green),
+                            const SizedBox(width: 10),
+                            Text(snapshot.data.toString().split("/")[1]),
+                          ])
+                        : Row(children: [
+                            const Icon(Icons.error, color: Colors.red),
+                            const SizedBox(width: 10),
+                            Text(snapshot.data.toString()),
+                          ]);
+                  } else {
+                    return  const Row(
+                      children: [
+                        SizedBox(
+                          height: 15,
+                          width: 15,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(GeneralColor.lightColor),
+                            strokeWidth: 1,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text("Loading...")
+                      ],
+                    );
+                  }
+                },
+              ),
+              duration: const Duration(seconds: 2),
+            ),
           );
-          final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-          teamProvider.addMember(newMember);
-        }
-      ),
+          }),
     );
   }
 
-  static void showAddSavingModal(BuildContext context, TeamMember member, JenisTransaksiProvider jenisTransaksiProvider){
+  static void showAddSavingModal(BuildContext context, TeamMember member,
+      JenisTransaksiProvider jenisTransaksiProvider) {
     // final TeamMember member;
 
     inputSavingController.controllerReset();
     showDialog(
       context: context,
       builder: (context) => AddSavingEventModal(
-        inputSavingController: inputSavingController,
-        jenisTransaksiProvider: jenisTransaksiProvider,
-        onAdd: (){
-          final Tabungan newTabungan = Tabungan(transaksiID: inputSavingController.transactionType.value!.id,nominal: int.parse(inputSavingController.nominal.text));
-          final savingProvider = Provider.of<TabunganProvider>(context, listen: false);
-          savingProvider.addTabungan(member, newTabungan);
-        }
-      ),
+          inputSavingController: inputSavingController,
+          jenisTransaksiProvider: jenisTransaksiProvider,
+          onAdd: () {
+            final Tabungan newTabungan = Tabungan(
+                transaksiID: inputSavingController.transactionType.value!.id,
+                nominal: int.parse(inputSavingController.nominal.text));
+            final savingProvider =
+                Provider.of<TabunganProvider>(context, listen: false);
+            // savingProvider.addTabungan(member, newTabungan);
+             ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: FutureBuilder(
+                future: savingProvider.addTabungan(member, newTabungan),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return snapshot.data.toString().split("/")[0] == "success"
+                        ? Row(children: [
+                            const Icon(Icons.check_circle, color: Colors.green),
+                            const SizedBox(width: 10),
+                            Text(snapshot.data.toString().split("/")[1]),
+                          ])
+                        : Row(children: [
+                            const Icon(Icons.error, color: Colors.red),
+                            const SizedBox(width: 10),
+                            Text(snapshot.data.toString()),
+                          ]);
+                  } else {
+                    return  const Row(
+                      children: [
+                        SizedBox(
+                          height: 15,
+                          width: 15,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(GeneralColor.lightColor),
+                            strokeWidth: 1,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text("Loading...")
+                      ],
+                    );
+                  }
+                },
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          }),
     );
-
   }
 
   static void showEditMemberModal(BuildContext context, TeamMember member) {
@@ -129,8 +251,45 @@ class ShowModal {
           }
           final teamProvider =
               Provider.of<TeamProvider>(context, listen: false);
-          teamProvider.updateMember(editedMember);
-          // showDeleteSuccesModal(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: FutureBuilder(
+                future: teamProvider.updateMember(editedMember),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return snapshot.data.toString().split("/")[0] == "success"
+                        ? Row(children: [
+                            const Icon(Icons.check_circle, color: Colors.green),
+                            const SizedBox(width: 10),
+                            Text(snapshot.data.toString().split("/")[1]),
+                          ])
+                        : Row(children: [
+                            const Icon(Icons.error, color: Colors.red),
+                            const SizedBox(width: 10),
+                            Text(snapshot.data.toString()),
+                          ]);
+                  } else {
+                    return  const Row(
+                      children: [
+                        SizedBox(
+                          height: 15,
+                          width: 15,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(GeneralColor.lightColor),
+                            strokeWidth: 1,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text("Loading...")
+                      ],
+                    );
+                  }
+                },
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          // teamProvider.updateMember(editedMember);
         },
       ),
     );
