@@ -1,6 +1,5 @@
 import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/model/team_members_model.dart';
-import 'package:first_flutter_application/utils/bug_tester.dart';
 import 'package:first_flutter_application/utils/format/currency.dart';
 import 'package:first_flutter_application/utils/modal/modal_utils.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
@@ -22,15 +21,6 @@ class MemberCard extends StatefulWidget {
 
 class _MemberCardState extends State<MemberCard> {
   late int _previousBalance = 0;
-
-  // late Future<int> _futureSaldo;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _futureSaldo = widget.getSaldo();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -16,6 +16,12 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+final List<Widget> pages = [
+  const DashboardPage(),
+  const TeamPage(),
+  const ProfilePage(),
+];
+
 class _HomeScreenState extends State<HomeScreen> {
   var logger = Logger();
   final myStorage = GetStorage();
@@ -25,12 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.pushNamed(context, '/signIn');
   }
 
-  @override
-  void initState() {
-    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    teamProvider.fetchTeamMembers();
-    super.initState();
-  }
+
 
   void goLogOut() async {
     final dio = Dio();
@@ -69,82 +70,6 @@ class _HomeScreenState extends State<HomeScreen> {
         bottomNavigationBar: BottomNavBar(
           onTabchange: (index) => navigateBottomBar(index),
         ),
-        // appBar: AppBar(
-        //   backgroundColor: const Color.fromRGBO(0, 0, 0, 1),
-        //   leading: Builder(
-        //     builder: (context) => IconButton(
-        //       icon: const Icon(Icons.menu),
-        //       color: Colors.white,
-        //       onPressed: () => Scaffold.of(context).openDrawer(),
-        //     ),
-        //   ),
-        //   title: const Text(
-        //     'Firstore',
-        //     style: TextStyle(
-        //       color: Colors.white,
-        //     ),
-        //   ),
-        // ),
-        // drawer: Drawer(
-        //   backgroundColor: const Color.fromRGBO(17, 17, 17, 1),
-        //   child: Column(
-        //     children: [
-        //       const DrawerHeader(
-        //           child: Text('Firstore',
-        //               style: TextStyle(
-        //                   color: Color.fromRGBO(215, 252, 112, 1),
-        //                   fontSize: 24,
-        //                   fontWeight: FontWeight.bold,
-        //                   fontFamily: 'Montserrat'))),
-        //       const Padding(
-        //         padding: EdgeInsets.all(8.0),
-        //         child: ListTile(
-        //           iconColor: Colors.white,
-        //           textColor: Colors.white,
-        //           leading: Icon(Icons.home),
-        //           title: Text('Home'),
-        //         ),
-        //       ),
-        //       const Padding(
-        //         padding: EdgeInsets.all(8.0),
-        //         child: ListTile(
-        //           iconColor: Colors.white,
-        //           textColor: Colors.white,
-        //           leading: Icon(Icons.search),
-        //           title: Text('Search'),
-        //         ),
-        //       ),
-        //       const Padding(
-        //         padding: EdgeInsets.all(8.0),
-        //         child: ListTile(
-        //           iconColor: Colors.white,
-        //           textColor: Colors.white,
-        //           leading: Icon(Icons.settings),
-        //           title: Text('settings'),
-        //         ),
-        //       ),
-        //       Padding(
-        //           padding: const EdgeInsets.all(8.0),
-        //           child: GestureDetector(
-        //               onTap: goLogOut,
-        //               child: const ListTile(
-        //                 iconColor: Colors.white,
-        //                 textColor: Colors.white,
-        //                 leading: Icon(Icons.logout),
-        //                 title: Text('Logout'),
-        //               ))),
-        //     ],
-        //   ),
-        // ),
-        body: Consumer<TeamProvider>(
-          builder: (context, teamValue, child) {
-            final List<Widget> pages = [
-              const DashboardPage(),
-               TeamPage(),
-              const ProfilePage(),
-            ];
-            return pages[_selectedIndex];
-          },
-        ));
+        body: pages[_selectedIndex]);
   }
 }

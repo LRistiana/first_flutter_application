@@ -71,13 +71,13 @@ class TeamProvider with ChangeNotifier {
         final List<dynamic> anggotas = response.data['data']['anggotas'];
         _teamMembers =
             anggotas.map((member) => TeamMember.fromJson(member)).toList();
-        Logger().i('${response.statusCode}\n${response.data['message']}');
+        Logger().i('${response.statusCode}\n${response.data['message']}\n${myStorage.read('token')}');
         notifyListeners();
       } else {
         throw Exception('Gagal mengambil data dari API');
       }
     } on DioException catch (e) {
-      Logger().e(e.response?.data['message'],
+      Logger().e("${e.response?.data['message']}\n${myStorage.read('token')}",
           error: "${e.response?.statusMessage} ${e.response?.statusCode}");
     }
   }

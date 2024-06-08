@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
         '/tabungan' : (context) =>  TabunganPageWrapper(),
       },
       initialRoute: '/',
+      debugShowCheckedModeBanner: false,
       checkerboardOffscreenLayers: false,
       theme: ThemeData(
         primaryColor: GeneralColor.primaryColor,
@@ -49,7 +50,6 @@ class MemberScreenWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int? memberID = ModalRoute.of(context)?.settings.arguments as int?;
-    
       if (memberID == null) {
         // Jika argument null, navigasi kembali ke homepage
         Navigator.of(context).pushReplacementNamed('/homePage');

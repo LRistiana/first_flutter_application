@@ -10,8 +10,6 @@ class MembersPanel extends StatelessWidget {
   const MembersPanel({super.key});
   @override
   Widget build(BuildContext context) {
-    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    teamProvider.fetchTeamMembers();
     return Container(
         height: 530,
         padding: const EdgeInsets.all(8),
@@ -147,44 +145,3 @@ class MembersPanel extends StatelessWidget {
         ));
   }
 }
-
-
-
-
-// teamMembers.map((member) {
-//                         return ListTile(
-//                           splashColor: Colors.transparent,
-//                           onTap: () => Navigator.of(context)
-//                               .pushNamed('/member', arguments: teamMembers.id),
-//                           onLongPress: () => ShowModal.showCustomizeModal(
-//                               teamMembers, context),
-//                           leading: Container(
-//                               height: 36,
-//                               width: 36,
-//                               decoration: BoxDecoration(
-//                                 color: BackgroundColor.iconBacgroundColor,
-//                                 borderRadius: BorderRadius.circular(50),
-//                               ),
-//                               child: const Icon(Icons.person)),
-//                           title: Text(teamMembers.nama,
-//                               style: const TextStyle(
-//                                   fontSize: 16,
-//                                   fontWeight: FontWeight.bold,
-//                                   color: GeneralColor.lightColor)),
-//                           subtitle: FutureBuilder<int>(
-//                             future: teamProvider
-//                                 .getSaldo(teamProvider.teamMembers[index].id),
-//                             builder: (context, snapshot) {
-//                               if (snapshot.connectionState ==
-//                                   ConnectionState.waiting) {
-//                                 return const Text('Saldo : Rp. 0');
-//                               } else if (snapshot.hasError) {
-//                                 return const Text('Error');
-//                               } else {
-//                                 return Text(
-//                                     'Saldo : ${CurrencyFormatter.rupiah(snapshot.data!)}');
-//                               }
-//                             },
-//                           ),
-//                         );
-//                       }).toList(),
