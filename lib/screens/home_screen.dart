@@ -1,5 +1,5 @@
 import "package:dio/dio.dart";
-import "package:first_flutter_application/model/team_members_model.dart";
+// import "package:first_flutter_application/model/team_members_model.dart";
 import "package:first_flutter_application/screens/home_screen_pages/dashboard_page.dart";
 import "package:first_flutter_application/screens/home_screen_pages/profile_page.dart";
 import "package:first_flutter_application/screens/home_screen_pages/team_page.dart";
@@ -7,7 +7,7 @@ import "package:first_flutter_application/widgets/utils/bottom_nav_bar.dart";
 import "package:flutter/material.dart";
 import "package:get_storage/get_storage.dart";
 import "package:logger/logger.dart";
-import "package:provider/provider.dart";
+// import "package:provider/provider.dart";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,8 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void onLogOut() {
     Navigator.pushNamed(context, '/signIn');
   }
-
-
 
   void goLogOut() async {
     final dio = Dio();

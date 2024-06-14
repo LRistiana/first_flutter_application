@@ -132,9 +132,11 @@ class _MemberScreenState extends State<MemberScreen> {
                               jenisTransaksiProvider: jenisTransaksiValue,
                             ),
                             const SizedBox(width: 16),
-                            StatisticCard(
-                              member: teamValue.member,
-                            )
+                            teamValue.member.id == 0
+                                ? const SizedBox.shrink()
+                                : StatisticCard(
+                                    member: teamValue.member,
+                                  ),
                           ],
                         )),
                   ],
