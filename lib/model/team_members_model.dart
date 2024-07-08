@@ -61,6 +61,7 @@ class TeamProvider with ChangeNotifier {
 
   List<TeamMember> get teamMembers => _teamMembers;
   TeamMember get member => _member;
+  set setMember(TeamMember member) => {_member = member, notifyListeners()};
 
   Future<void> fetchTeamMembers() async {
     try {
@@ -192,7 +193,7 @@ class TeamProvider with ChangeNotifier {
             "alamat": member.alamat,
             "telepon": member.telepon,
             "tgl_lahir": member.tanggalLahir,
-            "status_aktif": 1,
+            "status_aktif": member.statusAktif,
           },
           options: Options(
             headers: {
@@ -201,6 +202,7 @@ class TeamProvider with ChangeNotifier {
           ));
       if (response.statusCode == 200) {
         fetchTeamMembers();
+        notifyListeners();
         Logger().i('${response.statusCode}\n${response.data['message']}');
         return 'success/Berhasil mengupdate anggota tim';
       } else {
@@ -216,4 +218,5 @@ class TeamProvider with ChangeNotifier {
       return "${e.response?.data['message']}";
     }
   }
+
 }

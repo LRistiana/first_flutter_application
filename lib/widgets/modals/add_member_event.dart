@@ -5,9 +5,7 @@ import 'package:first_flutter_application/utils/input_controller_util.dart';
 
 class AddMemberEventModal extends StatefulWidget {
   const AddMemberEventModal(
-      {super.key,
-      required this.inputMemberController,
-      required this.onAdd});
+      {super.key, required this.inputMemberController, required this.onAdd});
   final InputMemberController inputMemberController;
   final VoidCallback onAdd;
 
@@ -16,6 +14,8 @@ class AddMemberEventModal extends StatefulWidget {
 }
 
 class _AddMemberEventModalState extends State<AddMemberEventModal> {
+  bool _isSure = false;
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -29,7 +29,7 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
           gradient: GradientColor.primaryGradient,
           // color: const Color.fromRGBO(215, 252, 112, 1),
         ),
-        height: 550,
+        height: _isSure ? 580 : 550,
         width: 350,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -50,12 +50,14 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
                   hintText: 'Nomer Induk',
                   controller: widget.inputMemberController.nomerInduk),
               TextInput(
-                  hintText: 'Name', controller: widget.inputMemberController.name),
+                  hintText: 'Name',
+                  controller: widget.inputMemberController.name),
               TextInput(
                   hintText: 'Address',
                   controller: widget.inputMemberController.address),
               TextInput(
-                  hintText: 'Telp', controller: widget.inputMemberController.telp),
+                  hintText: 'Telp',
+                  controller: widget.inputMemberController.telp),
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Container(
@@ -82,6 +84,21 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
                   ),
                 ),
               ),
+              Visibility(
+                visible: _isSure,
+                child: Container(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: const Center(
+                    child: Text(
+                      "Please check your data before saving!",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(
                 height: 20,
               ),
@@ -90,7 +107,13 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
                 children: [
                   TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        if (_isSure) {
+                          setState(() {
+                            _isSure = false;
+                          });
+                        } else {
+                          Navigator.pop(context);
+                        }
                       },
                       child: const Text('Cancel',
                           style: TextStyle(
@@ -98,8 +121,14 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
                               fontWeight: FontWeight.bold))),
                   ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context);
-                        widget.onAdd();
+                        if (_isSure) {
+                          Navigator.pop(context);
+                          widget.onAdd();
+                        } else {
+                          setState(() {
+                            _isSure = true;
+                          });
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
@@ -110,9 +139,9 @@ class _AddMemberEventModalState extends State<AddMemberEventModal> {
                           borderRadius: BorderRadius.all(Radius.circular(40)),
                         ),
                       ),
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
+                      child: Text(
+                        _isSure ? 'Confirm' : 'Save',
+                        style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       )),
                 ],

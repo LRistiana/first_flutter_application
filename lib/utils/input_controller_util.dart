@@ -1,5 +1,6 @@
 import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class InputMemberController {
   late TextEditingController nameController = TextEditingController();
@@ -51,4 +52,41 @@ class InputSavingController{
   }
 
   InputSavingController();
+}
+
+class InputInterestController{
+  late TextEditingController rate = TextEditingController();
+  late ValueNotifier<bool> isActiveNotifier = ValueNotifier<bool>(false);
+  // bool isActive = false;
+
+  TextEditingController get rateController => rate;
+  ValueNotifier<bool> get isActiveController => isActiveNotifier;
+
+  void dispose() {
+    rate.dispose();
+  }
+
+  void controllerReset() {
+    rate.clear();
+    isActiveNotifier.value = false;
+  }
+
+  InputInterestController();
+}
+
+class InputToggleController{
+  late ValueNotifier<bool> isActiveNotifier = ValueNotifier<bool>(false);
+
+  ValueNotifier<bool> get isActiveController => isActiveNotifier;
+  set isActiveController(ValueNotifier<bool> value) => isActiveNotifier = value;
+
+  void dispose() {
+    isActiveNotifier.dispose();
+  }
+
+  void controllerReset() {
+    isActiveNotifier.value = false;
+  }
+
+  InputToggleController();
 }

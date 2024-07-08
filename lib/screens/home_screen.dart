@@ -1,6 +1,7 @@
 import "package:dio/dio.dart";
 // import "package:first_flutter_application/model/team_members_model.dart";
 import "package:first_flutter_application/screens/home_screen_pages/dashboard_page.dart";
+import "package:first_flutter_application/screens/home_screen_pages/interest_page.dart";
 import "package:first_flutter_application/screens/home_screen_pages/profile_page.dart";
 import "package:first_flutter_application/screens/home_screen_pages/team_page.dart";
 import "package:first_flutter_application/widgets/utils/bottom_nav_bar.dart";
@@ -19,7 +20,8 @@ class HomeScreen extends StatefulWidget {
 final List<Widget> pages = [
   const DashboardPage(),
   const TeamPage(),
-  const ProfilePage(),
+  // const ProfilePage(),
+  const InterestScreen()
 ];
 
 class _HomeScreenState extends State<HomeScreen> {

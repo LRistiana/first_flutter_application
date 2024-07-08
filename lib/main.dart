@@ -1,3 +1,5 @@
+import 'package:first_flutter_application/model/interest_model.dart';
+import 'package:first_flutter_application/model/user_model.dart';
 import 'package:first_flutter_application/screens/home_screen.dart';
 import 'package:first_flutter_application/screens/intro_screen.dart';
 import 'package:first_flutter_application/screens/sign_in_screen.dart';
@@ -17,6 +19,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => TeamProvider()),
         ChangeNotifierProvider(create: (_) => TabunganProvider()),
         ChangeNotifierProvider(create: (_) => JenisTransaksiProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => InterestProvider()),
       ],
       child: const MyApp(),
     ),  

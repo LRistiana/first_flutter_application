@@ -37,6 +37,13 @@ class MembersPanel extends StatelessWidget {
 
             List<String> sortedKeys = teamMemberMap.keys.toList();
             sortedKeys.sort((a, b) => a.compareTo(b));
+            teamMemberMap.forEach((key, value) {
+              print(key);
+              value.forEach((element) {
+                print(element.nama);
+              });
+            });
+          
 
             return ListView.builder(
               itemCount: sortedKeys.length,

@@ -1,39 +1,34 @@
-import 'package:first_flutter_application/utils/bug_tester.dart';
-import 'package:first_flutter_application/utils/gradient_text.dart';
-import 'package:first_flutter_application/utils/modal/modal_utils.dart';
-import 'package:first_flutter_application/utils/theme/color_theme.dart';
-import 'package:first_flutter_application/widgets/panel/team_members_panel.dart';
-import 'package:first_flutter_application/widgets/utils/input.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:first_flutter_application/model/team_members_model.dart';
+import "package:first_flutter_application/model/interest_model.dart";
+import "package:first_flutter_application/utils/gradient_text.dart";
+import "package:first_flutter_application/utils/modal/modal_utils.dart";
+import "package:first_flutter_application/utils/theme/color_theme.dart";
+import "package:first_flutter_application/widgets/cards/interest_card.dart";
+import "package:first_flutter_application/widgets/panel/interest_panel.dart";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
 
 
-class TeamPage extends StatefulWidget {
-  const TeamPage({super.key});
-  // final TeamProvider teamProvider;
+class InterestScreen extends StatefulWidget {
+  const InterestScreen({super.key});
 
   @override
-  State<TeamPage> createState() => _TeamPageState();
+  State<InterestScreen> createState() => InterestScreenState();
 }
 
-class _TeamPageState extends State<TeamPage> {
+class InterestScreenState extends State<InterestScreen> {
   @override
   void initState() {
-    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final interestProvider = Provider.of<InterestProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      teamProvider.fetchTeamMembers();
+      interestProvider.getInterests();
     });
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    BugTester.test(context.toString());
-
-    // return Consumer<TeamProvider>(
-    //   builder: (context, teamProvider, child) {
     return Stack(
       children: [
         Container(
@@ -44,27 +39,30 @@ class _TeamPageState extends State<TeamPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   GradientText(
-                    "Find your member",
+                    "Interest Rate",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   )
                 ],
               ),
               SizedBox(height: 16),
-              SearchInput(),
+              ActiveInterstCard(),
+              SizedBox(height: 16),
+              // InterestPanel()
+              
             ],
           ),
         ),
-        const Positioned(bottom: 0, left: 0, right: 0, child: MembersPanel()),
-        const AddMemberButton(),
+        const Positioned(bottom: 0, left: 0, right: 0, child: InterestPanel()),
+        const AddInterestButton(),
       ],
     );
-    // },
-    // );
   }
 }
 
-class AddMemberButton extends StatelessWidget {
-  const AddMemberButton({super.key});
+
+
+class AddInterestButton extends StatelessWidget {
+  const AddInterestButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +84,7 @@ class AddMemberButton extends StatelessWidget {
             color: Colors.black,
           ),
           onPressed: () {
-            ShowModal.showAddMemberModal(context);
+            ShowModal.showAddInterestModal(context);
           },
         ),
       ),

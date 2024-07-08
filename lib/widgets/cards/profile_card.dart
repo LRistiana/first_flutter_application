@@ -1,5 +1,7 @@
+import 'package:first_flutter_application/model/user_model.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProfileCard extends StatelessWidget {
   const ProfileCard({super.key});
@@ -34,35 +36,39 @@ class ProfileCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Column(
-                crossAxisAlignment:CrossAxisAlignment.start,  
-                children: [
-                  Text("Guest",
-                      style:  TextStyle(
-                          color: GeneralColor.darkColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                  Text("Guest@gmail.com",
-                      style:  TextStyle(
-                          color: BackgroundColor.primaryBackgroundColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold)),
-                ],
-              )
+              Consumer<UserProvider>(builder: (context, userProvider, _) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(userProvider.user?.name ?? "Guest",
+                        style: const TextStyle(
+                            color: GeneralColor.darkColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
+                    Text(userProvider.user?.email ?? "Loading...",
+                        style: const TextStyle(
+                            color: BackgroundColor.primaryBackgroundColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                );
+              }),
             ],
           ),
           const SizedBox(height: 36),
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Total Member Balance", style:  TextStyle(
-                  color: GeneralColor.darkColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold)),
-              Text("Rp 100.000.000", style:  TextStyle(
-                  color: GeneralColor.darkColor,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold)),
+              Text("Total Member Balance",
+                  style: TextStyle(
+                      color: GeneralColor.darkColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold)),
+              Text("Rp 100.000.000",
+                  style: TextStyle(
+                      color: GeneralColor.darkColor,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold)),
             ],
           )
         ],

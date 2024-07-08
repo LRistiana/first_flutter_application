@@ -20,27 +20,6 @@ class _ProfilePageState extends State<ProfilePage> {
   var name = 'xxxxx';
   var id = 'xxxxx';
 
-  // Future getUser() async {
-  //   final dio = Dio();
-  //   var logger = Logger();
-  //   try {
-  //     final response = await dio.get('https://mobileapis.manpits.xyz/api/user',
-  //         options: Options(
-  //           headers: {'Authorization': 'Bearer ${myStorage.read('token')}'},
-  //         ));
-  //     logger.i(response);
-  //     if (response.statusCode == 200) {
-  //       setState(() {
-  //         email = response.data['data']['email'];
-  //         name = response.data['data']['name'];
-  //         id = response.data['data']['id'];
-  //       });
-  //     }
-  //   } on DioException catch (e) {
-  //     logger.e(e);
-  //   }
-  // }
-
   void getUserData() async {
     try {
       var response = await Dio().get("$_apiUrl/user",

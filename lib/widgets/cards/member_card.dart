@@ -75,7 +75,7 @@ class _MemberCardState extends State<MemberCard> {
                 _previousBalance = snapshot.data!;
                 return AnimatedBalance(
                   startValue:
-                      previousBalanceHere, // ganti dengan saldo sebellumnya jika ada
+                      previousBalanceHere, 
                   endValue: snapshot.data!,
                   duration: const Duration(seconds: 1),
                 );
@@ -85,8 +85,22 @@ class _MemberCardState extends State<MemberCard> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
+              if (widget.member.statusAktif == 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    duration: Duration(seconds: 2),
+                    content: Text(
+                      'Member is not active',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }else{
               ShowModal.showAddSavingModal(
-                  context, widget.member, widget.jenisTransaksiProvider);
+                  context, widget.member, widget.jenisTransaksiProvider);}
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,

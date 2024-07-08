@@ -1,27 +1,31 @@
-import 'package:first_flutter_application/model/team_members_model.dart';
+// import 'package:first_flutter_application/model/tabungan_model.dart';
 import 'package:first_flutter_application/utils/theme/color_theme.dart';
-import 'package:first_flutter_application/widgets/utils/input.dart';
+// import 'package:first_flutter_application/widgets/utils/input.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter_application/utils/input_controller_util.dart';
 
-class EditMemberEventModal extends StatefulWidget {
-  const EditMemberEventModal(
+class EditStatusEventModal extends StatefulWidget {
+  const EditStatusEventModal(
       {super.key,
-      required this.member,
-      required this.inputMemberController,
-      required this.onCancel,
-      required this.onEdit});
-  final TeamMember member;
-  final InputMemberController inputMemberController;
-  final VoidCallback onCancel;
+      required this.inputToggleController,
+      required this.onEdit,});
+  
+  final InputToggleController inputToggleController;
   final VoidCallback onEdit;
-
+  
   @override
-  State<EditMemberEventModal> createState() => _EditMemberEventModalState();
+  State<EditStatusEventModal> createState() => _EditStatusEventModalState();
 }
 
-class _EditMemberEventModalState extends State<EditMemberEventModal> {
+class _EditStatusEventModalState extends State<EditStatusEventModal> {
   bool _isSure = false;
+  // ValueNotifier<bool> isActive = widget.inputToggleController.isActiveNotifier;
+
+  void toggleSwitch(bool value) {
+    setState(() {
+      widget.inputToggleController.isActiveController.value = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +37,10 @@ class _EditMemberEventModalState extends State<EditMemberEventModal> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(36),
-          gradient: GradientColor.primaryGradientRevert,
+          gradient: GradientColor.primaryGradient,
+          // color: const Color.fromRGBO(215, 252, 112, 1),
         ),
-        height: _isSure ? 580 : 550,
+        height: _isSure ? 250 : 220,
         width: 350,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -43,7 +48,7 @@ class _EditMemberEventModalState extends State<EditMemberEventModal> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Edit Member",
+                "Change Status",
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -52,76 +57,69 @@ class _EditMemberEventModalState extends State<EditMemberEventModal> {
               const SizedBox(
                 height: 20,
               ),
-              TextInput(
-                  hintText: 'Nomer Induk',
-                  controller: widget.inputMemberController.nomerInduk),
-              TextInput(
-                  hintText: 'Name', controller: widget.inputMemberController.name),
-              TextInput(
-                  hintText: 'Address',
-                  controller: widget.inputMemberController.address),
-              TextInput(
-                  hintText: 'Telp', controller: widget.inputMemberController.telp),
               Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.black, // Color of the underline
-                        width: 1.0, // Thickness of the underline
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Date of Birth',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black,
-                          )),
-                      DatePickerWidget(
-                          dateNotifer: widget.inputMemberController.date),
-                    ],
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: _isSure,
-                child: Container(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: const Center(
-                    child: Text(
-                      "Please check your data before saving!",
+                padding: const EdgeInsets.only(left: 22.0, right: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Active",
                       style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 16,
+                          color: Colors.black),
                     ),
-                  ),
+                    Switch(
+                    value: widget.inputToggleController.isActiveController.value,
+                    onChanged: toggleSwitch,
+                    activeColor: GeneralColor.darkColor,
+                    activeTrackColor: GeneralColor.secondaryColor,
+                    inactiveThumbColor: GeneralColor.lightColor,
+                    inactiveTrackColor: GeneralColor.secondaryColor,
+                                ),
+                  ],
                 ),
               ),
               const SizedBox(
+                height: 12,
+              ),
+              Visibility(
+                  visible: _isSure,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: const Center(
+                      child: Text(
+                        "Please check your data before confirm!",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              const SizedBox(
                 height: 20,
               ),
+              
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   TextButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        widget.onCancel();
                       },
                       child: const Text('Cancel',
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold))),
+                  
                   ElevatedButton(
                       onPressed: () {
                         if (_isSure) {
                           Navigator.pop(context);
-                          widget.onEdit();
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            widget.onEdit();
+                          });
                         } else {
                           setState(() {
                             _isSure = true;
@@ -137,7 +135,7 @@ class _EditMemberEventModalState extends State<EditMemberEventModal> {
                           borderRadius: BorderRadius.all(Radius.circular(40)),
                         ),
                       ),
-                      child: Text(
+                      child:  Text(
                         _isSure ? 'Confirm' : 'Save',
                         style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),

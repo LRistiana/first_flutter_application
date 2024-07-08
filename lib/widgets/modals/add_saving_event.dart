@@ -12,13 +12,15 @@ class AddSavingEventModal extends StatefulWidget {
       required this.jenisTransaksiProvider});
   final InputSavingController inputSavingController;
   final JenisTransaksiProvider jenisTransaksiProvider;
-final VoidCallback onAdd;
+  final VoidCallback onAdd;
 
   @override
   State<AddSavingEventModal> createState() => _AddSavingEventModalState();
 }
 
 class _AddSavingEventModalState extends State<AddSavingEventModal> {
+  bool _isSure = false;
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -32,7 +34,7 @@ class _AddSavingEventModalState extends State<AddSavingEventModal> {
           gradient: GradientColor.primaryGradient,
           // color: const Color.fromRGBO(215, 252, 112, 1),
         ),
-        height: 300,
+        height: _isSure ? 330 : 300,
         width: 350,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -56,9 +58,25 @@ class _AddSavingEventModalState extends State<AddSavingEventModal> {
               TextInput(
                   hintText: "Nominal",
                   controller: widget.inputSavingController.nominal),
+              Visibility(
+                  visible: _isSure,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: const Center(
+                      child: Text(
+                        "Please check your data before do transaction!",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               const SizedBox(
                 height: 20,
               ),
+              
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -70,12 +88,19 @@ class _AddSavingEventModalState extends State<AddSavingEventModal> {
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold))),
+                  
                   ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context);
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          widget.onAdd();
-                        });
+                        if (_isSure) {
+                          Navigator.pop(context);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            widget.onAdd();
+                          });
+                        } else {
+                          setState(() {
+                            _isSure = true;
+                          });
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
@@ -86,9 +111,9 @@ class _AddSavingEventModalState extends State<AddSavingEventModal> {
                           borderRadius: BorderRadius.all(Radius.circular(40)),
                         ),
                       ),
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
+                      child:  Text(
+                        _isSure ? 'Confirm' : 'Save',
+                        style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       )),
                 ],

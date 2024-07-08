@@ -30,6 +30,7 @@ class _TextInputState extends State<TextInput> {
         padding: const EdgeInsets.all(8.0),
         width: _isFocused ? 300.0 : 280.0, // Change these values as needed
         child: TextField(
+          
           controller: widget.controller,
           decoration: InputDecoration(
             labelText: widget.hintText,
@@ -106,14 +107,23 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        TextButton(
-          onPressed: () => _selectDate(context),
-          child: Text(
-            widget.dateNotifer.value == null
-                ? 'Select date'
-                : MonthFormatter.formatDateMonthYear(widget.dateNotifer.value!.toLocal().toString().split(' ')[0]),
-            style: const TextStyle(
-              color: Colors.black,
+        Container(
+          margin: const EdgeInsetsDirectional.only(bottom: 2.0),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: GeneralColor.darkColor,
+            ),
+            onPressed: () => _selectDate(context),
+            child: Text(
+              widget.dateNotifer.value == null
+                  ? 'Select date'
+                  : MonthFormatter.formatDateMonthYear(widget.dateNotifer.value!
+                      .toLocal()
+                      .toString()
+                      .split(' ')[0]),
+              style: const TextStyle(
+                color: GeneralColor.lightColor,
+              ),
             ),
           ),
         ),
@@ -123,7 +133,10 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
 }
 
 class TransactionType extends StatefulWidget {
-  const TransactionType({super.key, required this.selectedTypeTransaction, required this.jenisTransaksiProvider});
+  const TransactionType(
+      {super.key,
+      required this.selectedTypeTransaction,
+      required this.jenisTransaksiProvider});
   final ValueNotifier<JenisTransaksi?> selectedTypeTransaction;
   final JenisTransaksiProvider jenisTransaksiProvider;
 
@@ -210,10 +223,9 @@ class _TransactionTypeState extends State<TransactionType> {
           );
         }
       }, // comment ini
-    );// comment ini
+    ); // comment ini
   }
 }
-
 
 class SearchInput extends StatelessWidget {
   const SearchInput({super.key});
@@ -222,45 +234,21 @@ class SearchInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color:
-            BackgroundColor.iconBacgroundColor, // Mengatur warna latar belakang
-        borderRadius: BorderRadius.circular(50), // Membuat sudut bulat
+        color: BackgroundColor.iconBacgroundColor,
+        borderRadius: BorderRadius.circular(50),
       ),
-      padding: const EdgeInsets.symmetric(
-          horizontal: 24), // Menambahkan padding horizontal
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: const TextField(
+        cursorColor: GeneralColor.secondaryColor,
+        style: TextStyle(
+            color: GeneralColor.lightColor), 
         decoration: InputDecoration(
           hintStyle: TextStyle(
-              color: GeneralColor.darkColor), // Mengatur warna teks hint
-          hintText: 'Search...', // Menampilkan teks hint
-          border: InputBorder.none, // Menghapus border
-          icon: Icon(Icons.search), // Menampilkan ikon search di sisi kiri
+              color: GeneralColor.secondaryColor), 
+          hintText: 'Search..',
+          border: InputBorder.none,
+          icon: Icon(Icons.search),
         ),
-      ),
-    );
-  }
-}
-
-class GradientText extends StatelessWidget {
-  final String text;
-  final TextStyle style;
-
-  const GradientText(
-    this.text, {
-    super.key,
-    required this.style,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (Rect bounds) {
-        return GradientColor.primaryGradientRevert.createShader(bounds);
-      },
-      child: Text(
-        text,
-        style: style.copyWith(
-            color: Colors.white), // Optional: You can adjust the text color
       ),
     );
   }

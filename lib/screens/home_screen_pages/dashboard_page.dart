@@ -1,16 +1,24 @@
 import "package:dio/dio.dart";
+import "package:first_flutter_application/model/user_model.dart";
+import "package:first_flutter_application/utils/gradient_text.dart";
+import "package:first_flutter_application/utils/modal/modal_utils.dart";
 import "package:first_flutter_application/utils/theme/color_theme.dart";
 import "package:first_flutter_application/widgets/panel/dashboard_panel.dart";
+import "package:first_flutter_application/widgets/utils/input.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:flutter_svg/svg.dart";
 import "package:get_storage/get_storage.dart";
 import "package:logger/logger.dart";
+import "package:provider/provider.dart";
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+   
+   
 
   @override
   State<DashboardPage> createState() => _DasboardPageState();
+
 }
 class _DasboardPageState extends State<DashboardPage> {
   final myStorage = GetStorage();
@@ -39,6 +47,17 @@ class _DasboardPageState extends State<DashboardPage> {
       myStorage.remove('token');
     }
   }
+
+  @override
+  void initState() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      userProvider.fetchUser();
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -50,16 +69,22 @@ class _DasboardPageState extends State<DashboardPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Hi, Guest !",
-                    style: TextStyle(
-                        color: GeneralColor.lightColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+                  Consumer<UserProvider>(
+                    builder: (context, userProvider, child) {
+                      return Text(
+                        "Hi, ${userProvider.user?.name.split(" ")[0]
+                        ?? 'Guest'} !",
+                        style: const TextStyle(
+                            color: GeneralColor.lightColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      );
+                    },
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      goLogOut();
+                      ShowModal.showLogOutModal(context);
+                      // goLogOut();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: GeneralColor.lightColor,
@@ -81,6 +106,7 @@ class _DasboardPageState extends State<DashboardPage> {
                 ],
               ),
               const SizedBox(height: 16),
+              // SearchInput(),
               const SearchInput(),
               const SizedBox(height: 16),
                Row(
@@ -113,53 +139,3 @@ class _DasboardPageState extends State<DashboardPage> {
   }
 }
 
-class SearchInput extends StatelessWidget {
-  const SearchInput({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color:
-            BackgroundColor.iconBacgroundColor, // Mengatur warna latar belakang
-        borderRadius: BorderRadius.circular(50), // Membuat sudut bulat
-      ),
-      padding: const EdgeInsets.symmetric(
-          horizontal: 24), // Menambahkan padding horizontal
-      child: const TextField(
-        decoration: InputDecoration(
-          hintStyle: TextStyle(
-              color: GeneralColor.darkColor), // Mengatur warna teks hint
-          hintText: 'Search...', // Menampilkan teks hint
-          border: InputBorder.none, // Menghapus border
-          icon: Icon(Icons.search), // Menampilkan ikon search di sisi kiri
-        ),
-      ),
-    );
-  }
-}
-
-class GradientText extends StatelessWidget {
-  final String text;
-  final TextStyle style;
-
-  const GradientText(
-    this.text, {
-    super.key,
-    required this.style,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (Rect bounds) {
-        return GradientColor.primaryGradientRevert.createShader(bounds);
-      },
-      child: Text(
-        text,
-        style: style.copyWith(
-            color: Colors.white), // Optional: You can adjust the text color
-      ),
-    );
-  }
-}

@@ -1,6 +1,7 @@
 import "package:first_flutter_application/model/tabungan_model.dart";
 import "package:first_flutter_application/model/team_members_model.dart";
 import "package:first_flutter_application/utils/bug_tester.dart";
+import "package:first_flutter_application/utils/modal/modal_utils.dart";
 import "package:first_flutter_application/utils/theme/color_theme.dart";
 import "package:first_flutter_application/widgets/cards/member_card.dart";
 import "package:first_flutter_application/widgets/cards/statistic_card.dart";
@@ -52,6 +53,7 @@ class _MemberScreenState extends State<MemberScreen> {
       body: Consumer3<TeamProvider, TabunganProvider, JenisTransaksiProvider>(
         builder:
             (context, teamValue, tabunganValue, jenisTransaksiValue, child) {
+              // teamValue.fetchMember(widget.memberID);
           return Column(
             children: [
               Padding(
@@ -101,21 +103,32 @@ class _MemberScreenState extends State<MemberScreen> {
                               ],
                             )),
                         OutlinedButton(
-                            onPressed: () => {},
+                            onPressed: () => {
+                              ShowModal.showEditStatusModal(
+                                  context, teamValue.member)
+                            },
                             style: ButtonStyle(
-                              side: MaterialStateProperty.all(const BorderSide(
-                                  color: GeneralColor.primaryColor)),
+                              side: MaterialStateProperty.all( BorderSide(
+                                  color: teamValue.member.statusAktif == 0
+                                      ? Colors.red
+                                      : GeneralColor.primaryColor)),
                               shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               )),
                               overlayColor: MaterialStateProperty.all(
-                                  GeneralColor.primaryColor.withOpacity(0.1)),
+                                  teamValue.member.statusAktif == 0
+                                      ? Colors.red.withOpacity(0.1)
+                                      : GeneralColor.primaryColor.withOpacity(0.1)),
                             ),
-                            child: const Text(
-                              "Active",
+                            child: Text(
+                              teamValue.member.statusAktif == 0
+                                  ? "Deactivate"
+                                  : "Activate",
                               style:
-                                  TextStyle(color: GeneralColor.primaryColor),
+                                  TextStyle(color: teamValue.member.statusAktif == 0
+                                      ? Colors.red
+                                      : GeneralColor.primaryColor),
                             ))
                       ],
                     ),
